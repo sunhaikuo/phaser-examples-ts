@@ -1,0 +1,20 @@
+{
+    "name": "hello-typescript",
+    "version": "0.0.1",
+    "description": "Learning TypeScript.",
+    "scripts": {
+        "start": "tsc && concurrently \"npm run tsc:w\" \"npm run lite\"",
+        "lite": "lite-server",
+        "tsc": "tsc",
+        "tsc:w": "tsc -w"
+    },
+    "author": "2gua",
+    "license": "ISC",
+    "dependencies": {
+
+    },
+    "devDependencies": {
+        "lite-server": "^2.2.0",
+        "concurrently": "^2.0.0"
+    }
+}

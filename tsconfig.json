@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        // "module": "amd",
+        // "module": "none",
+        "module": "commonjs",
+        "sourceMap": false
+    },
+    "exclude": [
+        "node_modules",
+        "typings/main",
+        "typings/main.d.ts",
+        "tsd/phaser.comments.d.ts",
+        "tsd/pixi.comments.d.ts"
+    ]
+}
