@@ -1,5 +1,5 @@
 #### 使用TS来开发Phaser游戏
-+ 环境配置：vscode+typescript+phaser
++ 环境配置：vscode+typescript+phaser，如果本地环境没配置好，请参见：[vscode中使用typescript开发Phaser游戏][1]
 #### 使用方法
 + 安装vscode
 + npm install -g typescript
@@ -12,3 +12,5 @@
 + `tsd`文件夹为vscode代码提示所需文件
 + `star`目录下的文件为Phaser入门游戏**吃星星**的TS实现代码
 + `adapter`目录下为适配横屏游戏，采用新的方式，不用手动旋转，程序自动适配横屏
+
+[1]:https://segmentfault.com/a/1190000010063625
