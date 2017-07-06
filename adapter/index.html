@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Phaser-浏览器兼容处理</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+        }
+
+        #game {
+            width: 100%;
+            height: 100%;
+        }
+
+        canvas {
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="game"></div>
+    <script src="./assets/phaser.min.js"></script>
+    <!--<script src="./transform.js"></script>-->
+    <script src="../build/adapter/index.js"></script>
+
+</body>
+
+</html>
