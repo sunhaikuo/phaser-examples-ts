@@ -20,9 +20,9 @@ namespace TextSpace {
             this.star.inputEnabled = true
             this.dude.inputEnabled = true
             this.platfrom.inputEnabled = true
-            this.star.events.onInputDown.add(this.click)
-            this.dude.events.onInputDown.add(this.click)
-            this.platfrom.events.onInputDown.add(this.click)
+            this.star.events.onInputDown.add(this.click, this)
+            this.dude.events.onInputDown.add(this.click, this)
+            this.platfrom.events.onInputDown.add(this.click, this)
             // 增加提示
             let tip: Phaser.Sprite = this.add.text(this.game.width / 2, this.game.height / 2, '点击每个Sprite会提高层级', { fill: '#fff' })
             tip.anchor.setTo(0.5)
@@ -34,6 +34,10 @@ namespace TextSpace {
             this.game.debug.text('star:' + this.star.z, 10, 50)
         }
         click(sprite) {
+            this.group.forEach(function (item) {
+                item.alpha = 1
+            }, this)
+            sprite.alpha = 0.5
             sprite.z = 100
         }
         render() {
