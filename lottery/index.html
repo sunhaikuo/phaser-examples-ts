@@ -3,34 +3,29 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>抽奖小游戏</title>
-    <style>
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #11e6cd;
-        }
-
-        #game {
-            width: 100%;
-            height: 100%;
-        }
-
-        canvas {
-            margin: 0 auto;
-        }
-    </style>
-    <script src="./assets/phaser.min.js"></script>
-    <script src="../build/lottery/index.js"></script>
+    <script src="./assets/common.js"></script>
+    <link rel="stylesheet" href="./assets/common.css">
+    <meta name="viewport" content="initial-scale=0.5, maximum-scale=0.5, minimum-scale=0.5, user-scalable=no">
 </head>
 
 <body>
+    <div id="contact" class="contact">
+        <div class="border">
+            <div id="xm" class="bd xm"></div>
+            <div id="lxfs" class="bd lxfs"></div>
+            <div id="dz" class="bd dz"></div>
+            <div id="close" class="close"></div>
+            <input id="ixm" type="text" class="input ixm">
+            <input id="ilxfs" type="text" class="input ilxfs">
+            <input id="idz" type="text" class="input idz">
+            <div id="confirm" class="confirm"></div>
+        </div>
+    </div>
     <div id="game"></div>
+    <!--<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>-->
+    <script src="./assets/phaser.min.js"></script>
+    <script src="../build/lottery/index.js"></script>
 </body>
 
 </html>

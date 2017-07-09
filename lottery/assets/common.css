@@ -1,0 +1,95 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #11e6cd;
+}
+#game {
+  width: 100%;
+  height: 100%;
+}
+canvas {
+  margin: 0 auto;
+}
+.contact {
+  width: 100%;
+  height: 100%;
+  background-image: url('contact-bg.png');
+  background-size: 100%;
+  padding-top: 1.03125rem;
+  display: none;
+}
+.border {
+  background-image: url('contact-border.png');
+  background-size: 100%;
+  width: 8.921875rem;
+  height: 8.359375rem;
+  margin: 0 auto;
+  position: relative;
+}
+.bd {
+  position: absolute;
+  width: 1.4375rem;
+  height: 0.328125rem;
+  background-repeat: no-repeat;
+}
+.xm {
+  left: 1.265625rem;
+  top: 1.90625rem;
+  background-image: url('contact-xm.png');
+  background-size: 100%;
+}
+.lxfs {
+  left: 1.265625rem;
+  top: 3.125rem;
+  background-image: url('contact-lxfs.png');
+  background-size: 100%;
+}
+.dz {
+  left: 1.265625rem;
+  top: 4.328125rem;
+  background-image: url('contact-dz.png');
+  background-size: 100%;
+}
+.close {
+  position: absolute;
+  left: 8.359375rem;
+  top: -0.321875rem;
+  width: 0.78125rem;
+  height: 0.78125rem;
+  background-image: url('contact-close.png');
+  background-size: 100%;
+}
+.input {
+  width: 6.546875rem;
+  height: 0.625rem;
+  position: absolute;
+  background-color: transparent;
+  border: 0;
+  color: #fff;
+  font-size: 16px;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.ixm {
+  left: 0.96875rem;
+  top: 1.71875rem;
+}
+.ilxfs {
+  left: 0.96875rem;
+  top: 2.921875rem;
+}
+.idz {
+  left: 0.96875rem;
+  top: 4.125rem;
+}
+.confirm {
+  left: 2.796875rem;
+  top: 5.40625rem;
+  width: 3.21875rem;
+  height: 1.140625rem;
+  position: absolute;
+  background-image: url('contact-confirm.png');
+  background-size: 100%;
+}
