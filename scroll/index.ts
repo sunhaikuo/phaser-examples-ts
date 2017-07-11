@@ -1,0 +1,5 @@
+namespace ScrollSpace {
+    class Scroll {
+
+    }
+}

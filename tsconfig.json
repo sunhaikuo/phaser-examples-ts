@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "module": "commonjs",
+        "module": "umd",
+        // "module": "commonjs",
         "sourceMap": false,
         "outDir": "build"
     },
