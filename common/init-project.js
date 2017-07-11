@@ -58,7 +58,7 @@ function createFileArr() {
 
 function readerTS() {
     let obj = getPreloadStr()
-    let className = projectName.substr(0, 1).toLocaleUpperCase() + projectName.substr(1, projectName.length)
+    let className = upperCaseFirstWord(projectName)
     let result = `
     import { BootInitState } from '../common/BootInitState'
     class PreloadInitState extends Phaser.State {
@@ -103,7 +103,8 @@ function getPreloadStr() {
             load = 'script'
         }
         preloadArr.push(`this.load.${load}('${variableName}', '${relativePath}')`)
-        addArr.push(`// this.add.sprite(0, 0, '${variableName}')`)
+        let camelVal = createCamel(variableName)
+        addArr.push(`// let ${camelVal}: Phaser.Sprite = this.add.sprite(0, 0, '${variableName}')`)
     }
     return {
         preload: preloadArr.join('\n'),
@@ -147,11 +148,7 @@ function update() {
             // 重新生成TS文件
             renderPreloadCreate()
         }
-        // console.log(eventType, filename)
     })
-
-    // console.log(typeof result)
-    // console.log(result.split('\n')[10])1
 }
 
 function renderPreloadCreate() {
@@ -225,4 +222,23 @@ function backupIndex() {
     let rnd = +(new Date())
     let dest = path.join(backPath, 'index.' + rnd + '.js')
     fs.copySync(src, dest)
+}
+
+function upperCaseFirstWord(word) {
+    let className = ''
+    if (word) {
+        className = word.substr(0, 1).toLocaleUpperCase() + word.substr(1, word.length)
+    }
+    return className
+}
+
+function createCamel(word) {
+    let arr = word.split('-')
+    if (arr && arr.length > 1) {
+        for (let i = 1; i < arr.length; i++) {
+            let val = upperCaseFirstWord(arr[i])
+            arr[i] = val
+        }
+    }
+    return arr.join('')
 }

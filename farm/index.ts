@@ -5,17 +5,15 @@ class PreloadInitState extends Phaser.State {
         // preloadStart
         this.load.image('contact-bg', 'assets/contact-bg.png')
         this.load.image('contact-border', 'assets/contact-border.png')
-        this.load.image('contact-dz-1', 'assets/contact-dz-1.png')
+        this.load.image('contact-dz4', 'assets/contact-dz4.png')
         // preloadEnd
-        console.log('-----preload')
     }
     create() {
         // createStart
-        // this.add.sprite(0, 0, 'contact-bg')
-        // this.add.sprite(0, 0, 'contact-border')
-        // this.add.sprite(0, 0, 'contact-dz-1')
+        // let contactBg: Phaser.Sprite = this.add.sprite(0, 0, 'contact-bg')
+        // let contactBorder: Phaser.Sprite = this.add.sprite(0, 0, 'contact-border')
+        // let contactDz4: Phaser.Sprite = this.add.sprite(0, 0, 'contact-dz4')
         // createEnd
-        console.log('-----create')
     }
 }
 class Farm extends Phaser.Game {
