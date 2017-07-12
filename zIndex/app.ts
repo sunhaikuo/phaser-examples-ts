@@ -4,12 +4,18 @@ namespace TextSpace {
         star: Phaser.Sprite
         platfrom: Phaser.Sprite
         dude: Phaser.Sprite
+        man: Phaser.Sprite
         preload() {
             this.game.load.image('platform', './assets/platform.png')
             this.game.load.image('dude', './assets/dude.png')
             this.game.load.image('star', './assets/star.png')
+            this.load.spritesheet('man', './assets/man.png', 639, 789)
         }
         create() {
+            this.man = this.add.sprite(100, 300, 'man')
+            this.man.scale.setTo(0.2)
+            this.man.inputEnabled = true
+            this.man.events.onInputDown.add(this.clickMan, this)
             this.group = this.add.group()
             this.platfrom = this.group.create(100, 100, 'platform')
             this.platfrom.scale.setTo(0.1, 1)
@@ -27,6 +33,10 @@ namespace TextSpace {
             let tip: Phaser.Sprite = this.add.text(this.game.width / 2, this.game.height / 2, '点击每个Sprite会提高层级', { fill: '#fff' })
             tip.anchor.setTo(0.5)
         }
+        clickMan(man) {
+            let frame = man.frame
+            man.frame = frame + 1
+        }
         update() {
             this.group.sort()
             this.game.debug.text('platfrom:' + this.platfrom.z, 10, 10)
@@ -39,9 +49,6 @@ namespace TextSpace {
             }, this)
             sprite.alpha = 0.5
             sprite.z = 100
-        }
-        render() {
-
         }
     }
     class VideoState extends Phaser.State {

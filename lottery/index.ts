@@ -205,11 +205,6 @@ namespace Lottery {
             this.add.sprite(0, 0, 'playBg')
             this.add.sprite(408, 608, 'playTip')
 
-            this.zw = this.add.sprite(480, 491, 'playZw')
-            this.zw.inputEnabled = true
-            this.zw.events.onInputDown.add(this.countPerson, this)
-            this.startTm = 0
-
             this.personGroup = this.add.physicsGroup(Phaser.Physics.ARCADE)
             this.personGroup.createMultiple(10, ['playP1', 'playP2', 'playP3', 'playP4', 'playP5', 'playP6', 'playP7', 'playP8'])
             this.personGroup.enableBody = true
@@ -219,6 +214,11 @@ namespace Lottery {
             this.personGroup.setAll('body.bounce.y', 1)
             this.personGroup.setAll('outOfBoundsKill', true)
             this.personGroup.setAll('checkWorldBounds', true)
+
+            this.zw = this.add.sprite(480, 491, 'playZw')
+            this.zw.inputEnabled = true
+            this.zw.events.onInputDown.add(this.countPerson, this)
+            this.startTm = 0
 
         }
         update() {

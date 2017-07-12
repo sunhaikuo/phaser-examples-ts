@@ -52,7 +52,12 @@ namespace Browser {
         }
         create() {
             this.game.add.sprite(0, 0, 'bg')
-            this.game.add.sprite(636, 497, 'mtime')
+            let mtime = this.game.add.sprite(667, 323, 'mtime')
+            mtime.anchor.setTo(0.5)
+            let grp = this.add.graphics(0, 0)
+            grp.beginFill(0x35d0e1, 0.8)
+            // grp.drawCircle(667, 323, 100)
+            grp.drawCircle(this.game.height / 2, this.game.width / 2, 100)
         }
     }
     class Adapter extends Phaser.Game {
