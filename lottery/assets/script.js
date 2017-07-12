@@ -23,6 +23,10 @@ $(function () {
         var xm = $('#ixm').val()
         var lxfs = $('#ilxfs').val()
         var dz = $('#idz').val()
+        if (!(/^1[34578]\d{9}$/.test(lxfs))) {
+            alert("手机号码有误，请重填");
+            return
+        }
         if (xm && lxfs && dz && rewardId != -1) {
             var param = {
                 value: rewardId,
