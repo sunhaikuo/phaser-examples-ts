@@ -19,6 +19,9 @@ $(function () {
             }
         }
     })
+    $('#close').on('click', function () {
+        window.game1.state.start("result")
+    })
     $('#confirm').on('click', function () {
         var xm = $('#ixm').val()
         var lxfs = $('#ilxfs').val()
@@ -37,6 +40,7 @@ $(function () {
             $.getJSON('http://lf.tongchuangjob.com/Moblie/moblie/saveUserInfo', param, function (data) {
                 if (data.result == 'success') {
                     alert('您的信息保存成功，历时将有工作人员与您联系核实信息，请耐心等待！')
+                    window.game1.state.start("result")
                 } else {
                     alert('网络错误！')
                 }

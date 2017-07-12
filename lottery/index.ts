@@ -9,36 +9,42 @@ namespace Lottery {
     // 屏幕的方向1：竖屏；一：横屏
     let direction = '1'
     // 设置屏幕的宽高，宽高是设计图的相同。注：该设置是了适配横屏游戏，所以值是相反的
+    let isOk = false
     let width = 1036
     let height = 640
     class BootState extends Phaser.State {
-        // preload() {
-        //     this.game.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT
-        //     this.getDirection()
-        //     window.onorientationchange = this.getDirection
-        //     this.game.scale.onOrientationChange.add(function () {
-        //         this.getDirection()
-        //     }, this)
-        //     let game = this.game
-        //     Phaser.World.prototype.displayObjectUpdateTransform = function () {
-        //         if (direction == '1') {
-        //             game.scale.setGameSize(height, width)
-        //             this.x = game.camera.y + game.width;
-        //             this.y = -game.camera.x;
-        //             this.rotation = Phaser.Math.degToRad(Phaser.Math.wrapAngle(90));
-        //         } else {
-        //             game.scale.setGameSize(width, height)
-        //             this.x = -game.camera.x;
-        //             this.y = -game.camera.y;
-        //             this.rotation = 0;
-        //         }
-        //         PIXI.DisplayObject.prototype.updateTransform.call(this);
-        //     }
-        // }
+        preload() {
+            this.game.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT
+            this.getDirection()
+            window.onorientationchange = this.getDirection
+            this.game.scale.onOrientationChange.add(function () {
+                isOk = false
+                this.getDirection()
+            }, this)
+            let game = this.game
+            Phaser.World.prototype.displayObjectUpdateTransform = function () {
+                if (isOk) {
+                    return
+                }
+                if (direction == '1') {
+                    game.scale.setGameSize(height, width)
+                    this.x = game.camera.y + game.width;
+                    this.y = -game.camera.x;
+                    this.rotation = Phaser.Math.degToRad(Phaser.Math.wrapAngle(90));
+                } else {
+                    game.scale.setGameSize(width, height)
+                    this.x = -game.camera.x;
+                    this.y = -game.camera.y;
+                    this.rotation = 0;
+                }
+                PIXI.DisplayObject.prototype.updateTransform.call(this);
+                isOk = true
+            }
+        }
         create() {
             document.getElementById('tip').style.display = 'none'
             document.getElementById('game').style.display = 'block'
-            this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
+            this.game.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT
             this.state.start('preload')
         }
         // 获取屏幕的方向1：竖屏；一：横屏
@@ -60,9 +66,10 @@ namespace Lottery {
         graphics: Phaser.Graphics
         processText: Phaser.Text
         preload() {
+            window.game1 = this.game
             this.game.stage.backgroundColor = '#11e6cd'
-            this.load.script('zepton', './assets/zepto.min.js')
-            this.load.script('script', './assets/script.js')
+            // this.load.script('zepton', './assets/zepto.min.js')
+            // this.load.script('script', './assets/script.js')
             // 加载前期资源
             this.game.load.image('loadMan', './assets/load-man.png')
             this.game.load.image('processWrap', './assets/process-wrap.png')
@@ -137,23 +144,26 @@ namespace Lottery {
                     // 进度外围
                     processWrap = this.game.add.sprite(518, 320, 'processWrap')
                     processWrap.anchor.setTo(0.5)
+                } else {
+                    this.graphics = this.game.add.graphics(0, 0)
+                    this.graphics.beginFill(0xffbd05, 1)
+                    let width = 460 * (process / 100)
+                    this.graphics.drawRoundedRect(288, 305, width, 30, 16)
+                    if (this.processText) {
+                        this.processText.kill()
+                    }
+                    this.processText = this.game.add.text(518, 320, '0%', style)
+                    this.processText.anchor.set(0.5)
+                    this.processText.text = process + '%'
+                    this.processText.bringToTop()
+                    // this.game.world.bringToTop(this.processText)
                 }
-                this.graphics = this.game.add.graphics(0, 0)
-                this.graphics.beginFill(0xffbd05, 1)
-                let width = 460 * (process / 100)
-                this.graphics.drawRoundedRect(288, 305, width, 30, 16)
-                if (this.processText) {
-                    this.processText.kill()
-                }
-                this.processText = this.game.add.text(518, 320, '0%', style)
-                this.processText.anchor.set(0.5)
-                this.processText.text = process + '%'
-                // this.game.world.bringToTop(this.processText)
+
             }, this)
         }
         create() {
             // alert($)
-            this.game.state.start('play')
+            this.game.state.start('trans')
             // this.game.state.start('lottery')
         }
     }
@@ -184,7 +194,7 @@ namespace Lottery {
     class ReadyState extends Phaser.State {
         create() {
             this.game.add.sprite(0, 0, 'readyBg')
-            let startBtn = this.game.add.sprite(this.game.width / 2, 560, 'readyBtn')
+            let startBtn = this.game.add.sprite(518, 560, 'readyBtn')
             startBtn.anchor.setTo(0.5)
             startBtn.inputEnabled = true
             startBtn.events.onInputDown.add(this.play, this)
@@ -200,8 +210,6 @@ namespace Lottery {
         livingCnt: number
         zw: Phaser.Sprite
         create() {
-
-
             this.add.sprite(0, 0, 'playBg')
             this.add.sprite(408, 608, 'playTip')
 
@@ -305,10 +313,10 @@ namespace Lottery {
             // }, 1000)
             this.state.start('count')
         }
-        render() {
-            // 显示精灵的边界
-            this.game.debug.spriteBounds(this.zw);
-        }
+        // render() {
+        //     // 显示精灵的边界
+        //     this.game.debug.spriteBounds(this.zw);
+        // }
     }
     // 游戏结果统计
     class CountState extends Phaser.State {
@@ -484,7 +492,12 @@ namespace Lottery {
     class ResultState extends Phaser.State {
         create() {
             this.game.add.sprite(0, 0, 'resultBg')
-            this.game.add.sprite(791, 26, 'resultShare')
+            if (direction == '1') {
+                this.game.add.sprite(26, 26, 'resultShare')
+            } else {
+                this.game.add.sprite(791, 26, 'resultShare')
+            }
+
             // let close = this.game.add.sprite(659, 150, 'resultClose')
             let reward = this.game.add.sprite(253, 482, 'resultAward')
             let learn = this.game.add.sprite(542, 482, 'resultLearn')
