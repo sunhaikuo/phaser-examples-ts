@@ -3,6 +3,8 @@ let rewardId = -1
 // 用户的中奖信息，后台数据，1：10话费；2：50话费；3：手机
 let userReward = -1
 let $: any
+let bgMusic
+let lotMusic
 namespace Lottery {
     // 拍到多少个西瓜人
     let killCount = 0
@@ -82,6 +84,8 @@ namespace Lottery {
             this.load.image('trans2', './assets/trans-2.png')
             this.load.image('transText', './assets/trans-text.png')
             // 开始游戏
+            this.game.load.audio('playAudio', './assets/play-audio.mp3')
+            this.game.load.audio('playCam', './assets/play-cam.wav')
             this.game.load.image('playBg', './assets/play-bg.png')
             this.game.load.image('playZw', './assets/play-zw.png')
             this.game.load.image('playTip', './assets/play-tip.png')
@@ -98,6 +102,7 @@ namespace Lottery {
             this.game.load.image('countClose', './assets/count-close.png')
             this.game.load.image('countBtn', './assets/count-btn.png')
             // 抽奖
+            this.game.load.audio('lotAudio', './assets/lot-audio.mp3')
             this.game.load.image('lotBg', './assets/lot-bg.png')
             this.game.load.image('lotKuang', './assets/lot-kuang.png')
             this.game.load.spritesheet('lotBorder', './assets/lot-border.png', 126, 134)
@@ -138,8 +143,9 @@ namespace Lottery {
                 var processWrap
                 if (key == 'loadMan') {
                     // 人物
-                    var loadMan = this.game.add.sprite(494, 240, 'loadMan')
+                    var loadMan = this.game.add.sprite(490, 240, 'loadMan')
                     loadMan.anchor.setTo(0.5)
+                    loadMan.z = 0
                 } else if (key == 'processWrap') {
                     // 进度外围
                     processWrap = this.game.add.sprite(518, 320, 'processWrap')
@@ -148,7 +154,10 @@ namespace Lottery {
                     this.graphics = this.game.add.graphics(0, 0)
                     this.graphics.beginFill(0xffbd05, 1)
                     let width = 460 * (process / 100)
-                    this.graphics.drawRoundedRect(288, 305, width, 30, 16)
+                    // let width = 400
+                    this.graphics.drawRoundedRect(288, 305, width, 30, 18)
+
+                    this.graphics.drawCircle(302, 320, 30)
                     if (this.processText) {
                         this.processText.kill()
                     }
@@ -163,7 +172,9 @@ namespace Lottery {
         }
         create() {
             // alert($)
+            // this.game.state.start('ready')
             this.game.state.start('trans')
+            // this.game.state.start('play')
             // this.game.state.start('lottery')
         }
     }
@@ -186,7 +197,7 @@ namespace Lottery {
                 _this.add.tween(text).from({ x: -1000 }, 500, Phaser.Easing.Linear.None, true)
                 window.setTimeout(function () {
                     _this.state.start('ready')
-                }, 5000)
+                }, 7000)
             }, 2000)
         }
     }
@@ -200,6 +211,8 @@ namespace Lottery {
             startBtn.events.onInputDown.add(this.play, this)
         }
         play() {
+            bgMusic = this.add.audio('playAudio')
+            bgMusic.play()
             this.state.start('play')
         }
     }
@@ -209,8 +222,11 @@ namespace Lottery {
         startTm: number
         livingCnt: number
         zw: Phaser.Sprite
+        bgPic: Phaser.Sprite
+        canPlay: boolean
         create() {
-            this.add.sprite(0, 0, 'playBg')
+            this.canPlay = true
+            this.bgPic = this.add.sprite(0, 0, 'playBg')
             this.add.sprite(408, 608, 'playTip')
 
             this.personGroup = this.add.physicsGroup(Phaser.Physics.ARCADE)
@@ -227,14 +243,14 @@ namespace Lottery {
             this.zw.inputEnabled = true
             this.zw.events.onInputDown.add(this.countPerson, this)
             this.startTm = 0
-
+            // this.addQuake()
         }
         update() {
             var now = +(new Date())
             if (this.startTm == 0 || (now - this.startTm) > 400) {
                 // var mushroom: Phaser.Sprite = this.personGroup.getFirstExists(false)
                 var mushroom: Phaser.Sprite = this.personGroup.getRandom()
-                if (!mushroom) {
+                if (!mushroom || !this.canPlay) {
                     return
                 }
                 mushroom.scale.setTo(0.8)
@@ -305,13 +321,45 @@ namespace Lottery {
             this.game.physics.arcade.collide(this.personGroup)
         }
         countPerson() {
-            console.log('abc')
-            killCount = this.personGroup.countLiving()
-            let _this = this
-            // window.setTimeout(function () {
-            //     _this.state.start('count')
+            // let tw = this.add.tween(this.bgPic)
+            // tw.to({
+            //     alpha: 0,
+            //     z: -1000,
+            //     scale: 0.1
             // }, 1000)
-            this.state.start('count')
+            // tw.start()
+            this.addQuake()
+            this.canPlay = false
+            this.personGroup.setAll('body.velocity.x', 0)
+            this.personGroup.setAll('body.velocity.y', 0)
+            bgMusic.stop()
+            let aud = this.add.audio('playCam')
+            aud.play()
+            let _this = this
+            setTimeout(function () {
+                killCount = _this.personGroup.countLiving()
+                _this.state.start('count')
+            }, 800)
+        }
+        addQuake() {
+            console.log(this)
+            // rumble是隆隆作响的意思，这里rumbleOffset指地震的振幅
+            var rumbleOffset = 10;
+            // 设置tween的参数
+            // var properties = { x: this.camera.x - rumbleOffset };
+            var properties = { x: this.camera.x - rumbleOffset, y: this.camera.y - rumbleOffset };
+            var duration = 50;
+            var repeat = 5;
+            var ease = Phaser.Easing.Bounce.InOut;
+            var autoStart = false;
+            var delay = 0;
+            var yoyo = true;
+            // 给相机一个动画
+            var quake = this.add.tween(this.bgPic).to(properties, duration, ease, autoStart, delay, repeat, yoyo);
+            // 完了之后再来，这样就会无限循环
+            // quake.onComplete.addOnce(this.addQuake);
+            // 开始动画
+            quake.start();
         }
         // render() {
         //     // 显示精灵的边界
@@ -338,6 +386,8 @@ namespace Lottery {
             this.state.start('play')
         }
         lotter() {
+            lotMusic = this.add.audio('lotAudio')
+            lotMusic.play()
             this.state.start('lottery')
         }
     }
@@ -491,6 +541,7 @@ namespace Lottery {
     // 抽奖结果
     class ResultState extends Phaser.State {
         create() {
+            lotMusic.stop()
             this.game.add.sprite(0, 0, 'resultBg')
             if (direction == '1') {
                 this.game.add.sprite(26, 26, 'resultShare')
