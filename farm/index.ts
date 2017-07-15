@@ -144,7 +144,8 @@ class State1 extends Phaser.State {
             t2.onComplete.add(() => {
                 this.m1.pause()
                 this.m3.play()
-                let arr = next.children
+                // let arr = next.children
+                let arr = []
                 console.log('-------------------')
                 arr.forEach(sprite => {
                     // console.log(sprite.animations.name)
