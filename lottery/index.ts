@@ -88,6 +88,11 @@ namespace Lottery {
             this.load.image('trans1', './assets/trans-1.png')
             this.load.image('trans2', './assets/trans-2.png')
             this.load.image('transText', './assets/trans-text.png')
+            for (let i = 1; i <= 80; i++) {
+                this.load.image('transText' + i, './assets/' + i + '.png')
+            }
+            this.load.image('transBottom', './assets/trans-bottom.png')
+            this.load.image('transWdl', './assets/trans-wdl.png')
             // 开始游戏
             this.game.load.audio('playAudio', './assets/play-audio.mp3')
             this.game.load.audio('playCam', './assets/play-cam.wav')
@@ -109,6 +114,7 @@ namespace Lottery {
             this.game.load.image('countClose', './assets/count-close.png')
             this.game.load.image('countBtn', './assets/count-btn.png')
             this.game.load.image('countMan', './assets/count-man.png')
+            this.game.load.image('countWrap', './assets/count-wrap.png')
             // 抽奖
             this.game.load.audio('lotAudio', './assets/lot-audio.mp3')
             this.game.load.image('lotBg', './assets/lot-bg.png')
@@ -139,6 +145,11 @@ namespace Lottery {
             this.game.load.image('contactBg', './assets/contact-bg.png')
             this.game.load.image('contactClose', './assets/contact-close.png')
             this.game.load.image('contactConfirm', './assets/contact-confirm.png')
+
+            // 公共
+            this.game.load.spritesheet('number', './assets/number.png', 26.2999, 29)
+            this.game.load.spritesheet('heat', './assets/man-heat.png', 250, 260)
+
             // 进度文字
             let style = {
                 font: "18px Arial",
@@ -153,6 +164,7 @@ namespace Lottery {
                 if (key == 'loadMan') {
                     // 人物
                     var loadMan = this.game.add.sprite(490, 240, 'loadMan')
+                    this.add.tween(loadMan).to({ angle: 10 }, 400, "Linear", true, 0, -1).yoyo(true, 400)
                     loadMan.anchor.setTo(0.5)
                     loadMan.z = 0
                 } else if (key == 'processWrap') {
@@ -182,12 +194,12 @@ namespace Lottery {
         create() {
             // alert($)
             // this.game.state.start('ready')
+            // this.game.state.start('count')
             this.game.state.start('trans')
-            // this.game.state.start('trans')
             // this.game.state.start('play')
             // this.game.state.start('lottery')
             // this.game.state.start('count')
-            this.game.state.start('ready')
+            // this.game.state.start('ready')
         }
     }
     // 过渡动画
@@ -199,18 +211,65 @@ namespace Lottery {
             this.add.tween(trans2).from({
                 x: 1000,
                 y: 1000, alpha: 0
-            }, 1500, Phaser.Easing.Bounce.Out, true)
-            let _this = this
-            window.setTimeout(function () {
+                // }, 1500, Phaser.Easing.Bounce.Out, true)
+            }, 100, Phaser.Easing.Bounce.Out, true)
+            // let _this = this
+            // window.setTimeout(function () {
+
+            //     // let text = _this.add.sprite(201, 223, 'transText')
+            //     // _this.add.tween(text).from({ x: -1000 }, 500, Phaser.Easing.Linear.None, true)
+            //     // for (var i = 1; i <= 80; i++) {
+            //     //     _this
+            //     // }
+            //     window.setTimeout(function () {
+            //         // _this.state.start('ready')
+            //     }, 7000)
+            // }, 2000)
+            // this.time.events.destroy
+            let tm = this.time.events.repeat(500, 1, function () {
                 trans2.kill()
-                let trans1 = _this.add.sprite(77, 22, 'trans1')
-                _this.add.tween(trans1).from({ x: 1000, alpha: 0 }, 500, Phaser.Easing.Linear.None, true)
-                let text = _this.add.sprite(201, 223, 'transText')
-                _this.add.tween(text).from({ x: -1000 }, 500, Phaser.Easing.Linear.None, true)
-                window.setTimeout(function () {
-                    _this.state.start('ready')
-                }, 7000)
-            }, 2000)
+                let trans1 = this.add.sprite(77, 22, 'trans1')
+                let tw = this.add.tween(trans1).from({ x: 1000, alpha: 0 }, 500, Phaser.Easing.Linear.None, true)
+                let baseX = 157
+                let baseY = 218
+                let posiX = baseX
+                let posiY = baseY
+                let i = 1
+                tw.onComplete.add(function () {
+                    let tm = this.time.events.loop(100, function () {
+                        if (i > 80) {
+                            if (i == 81) {
+                                let btn = this.add.sprite(615, 470, 'transWdl')
+                                btn.scale.setTo(0.8)
+                                btn.inputEnabled = true
+                                btn.events.onInputDown.add(() => {
+                                    this.state.start('ready')
+                                }, this)
+                            }
+                            return
+                        }
+                        if (i == 70) {
+                            this.add.sprite(255, 468, 'transBottom')
+                        }
+                        if (i <= 10) {
+                            posiX = baseX + i * 32
+                        } else if (i <= 29) {
+                            posiX = baseX + (i - 10) * 32
+                        } else if (i <= 48) {
+                            posiX = baseX + (i - 29) * 32
+                        } else if (i <= 68) {
+                            posiX = baseX + (i - 48) * 32
+                        } else {
+                            posiX = baseX + (i - 68) * 32
+                        }
+                        if (i == 11 || i == 30 || i == 49 || i == 69) {
+                            posiY += 68
+                        }
+                        this.add.sprite(posiX, posiY, 'transText' + i)
+                        i++
+                    }, this)
+                }, this)
+            }, this)
         }
     }
     // 准备
@@ -389,7 +448,8 @@ namespace Lottery {
     class CountState extends Phaser.State {
         create() {
             this.add.sprite(0, 0, 'countBg')
-            let man = this.add.sprite(444, 15, 'countMan')
+            let man = this.add.sprite(400, 15, 'heat')
+            man.animations.add('manHeat', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, true).play()
             this.add.tween(man).from({
                 y: -200,
                 alpha: 0
@@ -403,7 +463,12 @@ namespace Lottery {
             close.events.onInputDown.add(this.close, this)
             lotter.inputEnabled = true
             lotter.events.onInputDown.add(this.lotter, this)
-            this.add.text(282, 335, '恭喜你共拍到了' + killCount + '个西瓜人！', { fill: '#fff', fontSize: 36 })
+            if (killCount > 9) {
+                killCount = 9
+            }
+            this.add.sprite(482, 335, 'number', killCount)
+            this.add.sprite(282, 335, 'countWrap')
+            // this.add.text(282, 335, '恭喜你共拍到了' + killCount + '个西瓜人！', { fill: '#fff', fontSize: 36 })
             this.add.text(280, 400, '打败了全国 ' + radio + '% 的玩家！您获得了一次抽奖机会！', {
                 fill: '#fff', fontSize: 22
             })
