@@ -68,7 +68,7 @@ namespace Lottery {
         graphics: Phaser.Graphics
         processText: Phaser.Text
         preload() {
-            window.game1 = this.game
+            // window.game1 = this.game
             this.game.stage.backgroundColor = '#11e6cd'
             // this.load.script('zepton', './assets/zepto.min.js')
             // this.load.script('script', './assets/script.js')
@@ -77,7 +77,12 @@ namespace Lottery {
             this.game.load.image('processWrap', './assets/process-wrap.png')
             // 准备画面
             this.game.load.image('readyBg', './assets/ready-bg.png')
+            this.game.load.image('readyOther', './assets/ready-other.png')
             this.game.load.image('readyBtn', './assets/ready-btn.png')
+            this.game.load.image('readyBg1', './assets/ready-bg-1.png')
+            this.game.load.image('ready1', './assets/ready-1.png')
+            this.game.load.image('ready2', './assets/ready-2.png')
+            this.game.load.image('ready3', './assets/ready-3.png')
             // 过渡动画
             this.load.image('transBg', './assets/trans-bg.png')
             this.load.image('trans1', './assets/trans-1.png')
@@ -99,8 +104,11 @@ namespace Lottery {
             this.load.spritesheet('playP8', './assets/play-p8.png', 1440 / 10, 274)
             // 游戏统计
             this.game.load.image('countBg', './assets/count-bg.png')
+            this.game.load.image('countTbl', './assets/count-tbl.png')
+            this.game.load.image('countBorder', './assets/count-border.png')
             this.game.load.image('countClose', './assets/count-close.png')
             this.game.load.image('countBtn', './assets/count-btn.png')
+            this.game.load.image('countMan', './assets/count-man.png')
             // 抽奖
             this.game.load.audio('lotAudio', './assets/lot-audio.mp3')
             this.game.load.image('lotBg', './assets/lot-bg.png')
@@ -126,6 +134,7 @@ namespace Lottery {
             this.game.load.image('result1', './assets/result-1.png')
             this.game.load.image('result2', './assets/result-2.png')
             this.game.load.image('result3', './assets/result-3.png')
+            this.game.load.image('resultGxy', './assets/result-gxy.png')
             // 联系方式
             this.game.load.image('contactBg', './assets/contact-bg.png')
             this.game.load.image('contactClose', './assets/contact-close.png')
@@ -174,8 +183,11 @@ namespace Lottery {
             // alert($)
             // this.game.state.start('ready')
             this.game.state.start('trans')
+            // this.game.state.start('trans')
             // this.game.state.start('play')
             // this.game.state.start('lottery')
+            // this.game.state.start('count')
+            this.game.state.start('ready')
         }
     }
     // 过渡动画
@@ -204,11 +216,15 @@ namespace Lottery {
     // 准备
     class ReadyState extends Phaser.State {
         create() {
-            this.game.add.sprite(0, 0, 'readyBg')
+            this.game.add.sprite(0, 0, 'readyBg1')
+            this.add.sprite(515, 5, 'countMan')
+            this.add.sprite(170, 46, 'readyOther')
+
             let startBtn = this.game.add.sprite(518, 560, 'readyBtn')
             startBtn.anchor.setTo(0.5)
             startBtn.inputEnabled = true
-            startBtn.events.onInputDown.add(this.play, this)
+            let btn = startBtn.events.onInputDown.add(this.play, this)
+            this.add.tween(startBtn).to({ alpha: 0 }, 700, "Linear", true, 0, -1, true)
         }
         play() {
             bgMusic = this.add.audio('playAudio')
@@ -228,7 +244,9 @@ namespace Lottery {
             this.canPlay = true
             this.bgPic = this.add.sprite(0, 0, 'playBg')
             this.add.sprite(408, 608, 'playTip')
-
+            this.add.sprite(0, 0, 'playBg')
+            let tip = this.add.sprite(408, 608, 'playTip')
+            this.add.tween(tip).to({ alpha: 0 }, 500, "Linear", true, 0, -1).yoyo(true, 500)
             this.personGroup = this.add.physicsGroup(Phaser.Physics.ARCADE)
             this.personGroup.createMultiple(10, ['playP1', 'playP2', 'playP3', 'playP4', 'playP5', 'playP6', 'playP7', 'playP8'])
             this.personGroup.enableBody = true
@@ -242,8 +260,9 @@ namespace Lottery {
             this.zw = this.add.sprite(480, 491, 'playZw')
             this.zw.inputEnabled = true
             this.zw.events.onInputDown.add(this.countPerson, this)
+            let zwTw = this.add.tween(this.zw)
+            zwTw.to({ alpha: 0 }, 500, "Linear", true, 0, -1).yoyo(true, 500)
             this.startTm = 0
-            // this.addQuake()
         }
         update() {
             var now = +(new Date())
@@ -370,6 +389,13 @@ namespace Lottery {
     class CountState extends Phaser.State {
         create() {
             this.add.sprite(0, 0, 'countBg')
+            let man = this.add.sprite(444, 15, 'countMan')
+            this.add.tween(man).from({
+                y: -200,
+                alpha: 0
+            }, 200).start()
+            let border = this.add.sprite(244, 253, 'countBorder')
+            let tbl = this.add.sprite(381, 220, 'countTbl')
             let close = this.add.sprite(659, 149, 'countClose')
             let lotter = this.add.sprite(341, 510, 'countBtn')
             let radio = killCount > 10 ? Math.round(10 / 11 * 100) : Math.round(killCount / 11 * 100)
@@ -378,8 +404,8 @@ namespace Lottery {
             lotter.inputEnabled = true
             lotter.events.onInputDown.add(this.lotter, this)
             this.add.text(282, 335, '恭喜你共拍到了' + killCount + '个西瓜人！', { fill: '#fff', fontSize: 36 })
-            this.add.text(319, 392, '打败了全国 ' + radio + '% 的玩家！您获得了一次抽奖机会！', {
-                fill: '#fff', fontSize: 18
+            this.add.text(280, 400, '打败了全国 ' + radio + '% 的玩家！您获得了一次抽奖机会！', {
+                fill: '#fff', fontSize: 22
             })
         }
         close() {
@@ -476,11 +502,16 @@ namespace Lottery {
                     console.log(5)
                     this.direction = 'stop'
                     this.start = false
+
+                    let final = this.borderGroup.getAt(this.index)
+                    console.log(final)
+                    let finalTw = this.add.tween(final)
+                    finalTw.to({ alpha: 0 }, 300, "Linear", true, 0, -1).yoyo(true, 300)
                     let _this = this
                     window.setTimeout(function () {
                         _this.result = 0
                         _this.state.start('result')
-                    }, 1000)
+                    }, 1500)
                 }
 
                 var posi = this.posiArr[this.index]
@@ -543,13 +574,19 @@ namespace Lottery {
         create() {
             lotMusic.stop()
             this.game.add.sprite(0, 0, 'resultBg')
+            this.add.sprite(0, 0, 'countBg')
+            let man = this.add.sprite(444, 15, 'countMan')
+            this.add.tween(man).from({
+                y: -200,
+                alpha: 0
+            }, 200).start()
+            let border = this.add.sprite(244, 253, 'countBorder')
             if (direction == '1') {
                 this.game.add.sprite(26, 26, 'resultShare')
             } else {
                 this.game.add.sprite(791, 26, 'resultShare')
             }
-
-            // let close = this.game.add.sprite(659, 150, 'resultClose')
+            this.add.sprite(381, 220, 'resultGxy')
             let reward = this.game.add.sprite(253, 482, 'resultAward')
             let learn = this.game.add.sprite(542, 482, 'resultLearn')
             if (userReward == 0 || userReward == -1) {
