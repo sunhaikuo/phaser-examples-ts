@@ -5,6 +5,8 @@ let userReward = -1
 let $: any
 let bgMusic
 let lotMusic
+let soundArr: Phaser.Sound[] = []
+let isMute: boolean
 namespace Lottery {
     // 拍到多少个西瓜人
     let killCount = 0
@@ -262,11 +264,11 @@ namespace Lottery {
                             }
                             return
                         }
-                        if (i == 70) {
-                            this.add.sprite(255, 418, 'transBottom')
-                        }
+                        // if (i == 70) {
+                        //     this.add.sprite(255, 418, 'transBottom')
+                        // }
                         if (i <= 10) {
-                            posiX = baseX + i * 32
+                            posiX = baseX + 120 + i * 32
                         } else if (i <= 29) {
                             posiX = baseX + (i - 10) * 32
                         } else if (i <= 48) {
@@ -274,7 +276,7 @@ namespace Lottery {
                         } else if (i <= 68) {
                             posiX = baseX + (i - 48) * 32
                         } else {
-                            posiX = baseX + (i - 68) * 32
+                            posiX = baseX + 100 + (i - 68) * 32
                         }
                         if (i == 11 || i == 30 || i == 49 || i == 69) {
                             posiY += 55
