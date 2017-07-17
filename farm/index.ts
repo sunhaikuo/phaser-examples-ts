@@ -199,12 +199,10 @@ class State1 extends Phaser.State {
 
 class State2 extends PreloadInitState {
     create() {
-        // this.setZero()
-        console.log(this.zero)
 
         let m1 = this.add.sound('m1')
         audios.push(m1)
-        let bg2H: Phaser.Sprite = this.add.sprite(0, 0, 'bg2-h')
+        // let bg2H: Phaser.Sprite = this.add.sprite(0, 0, 'bg2-h')
         let stop = this.add.sprite(100, 100, 'zero')
         stop.inputEnabled = true
         stop.events.onInputDown.add(() => {
@@ -224,6 +222,12 @@ class State2 extends PreloadInitState {
             this.state.start('s3')
             clearSound()
         }, this)
+
+        let grap = this.add.graphics(0, 0)
+        grap.beginFill(0xffffff)
+        grap.drawRoundedRect(400, 400, 400, 30, 90)
+        grap.beginFill(0x11ffff)
+        // grap.drawCircle(450, 450, 100)
     }
 }
 class State3 extends Phaser.State {
