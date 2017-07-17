@@ -51,7 +51,7 @@ function createFileArr() {
 
         } else if (fileStat.isDirectory()) {
             console.log(path.join(assetsPath, file))
-            readFile(path.join(assetsPath, file))
+            readFileTS(path.join(assetsPath, file))
         }
     })
 }
@@ -95,7 +95,7 @@ function getPreloadStr() {
         let relativePath = relativePathArr[i]
         var val = ''
         var load = 'image'
-        if (relativePath.indexOf('.mp3') > -1) {
+        if (relativePath.indexOf('.mp3') > -1 || relativePath.indexOf('.wav') > -1) {
             load = 'audio'
         } else if (relativePath.indexOf('.mp4') > -1) {
             load = 'video'

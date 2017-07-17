@@ -1,23 +1,33 @@
 
 import { BootInitState } from '../common/BootInitState'
+let btn: Phaser.Sprite
+let audios: Phaser.Sound[] = []
+let mute: boolean
 class PreloadInitState extends Phaser.State {
+    constructor() {
+        console.log('1')
+        super()
+        console.log('2')
+    }
+    // zero: Phaser.Sprite
+    _zero: number
     preload() {
         // preloadStart
         this.load.image('bg1-h', 'assets/bg1-h.jpg')
         this.load.image('bg2-h', 'assets/bg2-h.jpg')
         this.load.image('bg3-h', 'assets/bg3-h.jpg')
         this.load.image('bg4-h', 'assets/bg4-h.jpg')
+        this.load.image('chicken_spritesheet', 'assets/chicken_spritesheet.png')
+        this.load.image('horse_spritesheet', 'assets/horse_spritesheet.png')
         this.load.audio('m1', 'assets/m1.mp3')
         this.load.audio('m2', 'assets/m2.mp3')
         this.load.audio('m3', 'assets/m3.wav')
-
-        this.load.spritesheet('chicken', './assets/chicken_spritesheet.png', 131, 200, 3)
-        this.load.spritesheet('horse', './assets/horse_spritesheet.png', 212, 200, 3)
-        this.load.spritesheet('pig', './assets/pig_spritesheet.png', 297, 200, 3)
-        this.load.spritesheet('sheep', './assets/sheep_spritesheet.png', 244, 200, 3)
-
+        this.load.image('pig_spritesheet', 'assets/pig_spritesheet.png')
+        this.load.image('right-circle', 'assets/right-circle.png')
+        this.load.image('sheep_spritesheet', 'assets/sheep_spritesheet.png')
+        this.load.image('start-btn', 'assets/start-btn.png')
+        this.load.image('zero', 'assets/zero.png')
         // preloadEnd
-
         // this.load.spritesheet('chicken', './assets/chicken_spritesheet.png', 131, 200, 3)
         // this.load.spritesheet('horse', './assets/horse_spritesheet.png', 212, 200, 3)
         // this.load.spritesheet('pig', './assets/pig_spritesheet.png', 297, 200, 3)
@@ -25,18 +35,20 @@ class PreloadInitState extends Phaser.State {
     }
     create() {
         // createStart
-        // let bg1H: Phaser.Sprite = this.add.sprite(0, 0, 'bg1-h')
-        // let bg2H: Phaser.Sprite = this.add.sprite(0, 0, 'bg2-h')
-        // let bg3H: Phaser.Sprite = this.add.sprite(0, 0, 'bg3-h')
-        // let bg4H: Phaser.Sprite = this.add.sprite(0, 0, 'bg4-h')
-        // let chicken_spritesheet: Phaser.Sprite = this.add.sprite(0, 0, 'chicken_spritesheet')
-        // let horse_spritesheet: Phaser.Sprite = this.add.sprite(0, 0, 'horse_spritesheet')
-        // let pig_spritesheet: Phaser.Sprite = this.add.sprite(0, 0, 'pig_spritesheet')
-        // let sheep_spritesheet: Phaser.Sprite = this.add.sprite(0, 0, 'sheep_spritesheet')
+        let zero: Phaser.Sprite = this.add.sprite(0, 0, 'zero')
         // createEnd
-        this.state.start('s1')
 
-
+        console.log('3')
+        this.setZero()
+        this.state.start('s2')
+        // this.setZero()
+    }
+    setZero() {
+        console.log('ccc')
+        this._zero = 456
+    }
+    get zero() {
+        return this._zero
     }
 }
 class State1 extends Phaser.State {
@@ -79,6 +91,9 @@ class State1 extends Phaser.State {
         }
     }
     create() {
+
+
+
         this.totalGroup = this.add.group()
         // group1的东西
         let chicken = this.add.sprite(667, 323, 'chicken')
@@ -182,14 +197,44 @@ class State1 extends Phaser.State {
     }
 }
 
-class State2 extends Phaser.State {
+class State2 extends PreloadInitState {
     create() {
+        // this.setZero()
+        console.log(this.zero)
+
+        let m1 = this.add.sound('m1')
+        audios.push(m1)
         let bg2H: Phaser.Sprite = this.add.sprite(0, 0, 'bg2-h')
+        let stop = this.add.sprite(100, 100, 'zero')
+        stop.inputEnabled = true
+        stop.events.onInputDown.add(() => {
+            controlSound()
+        }, this)
+        let rightCircle: Phaser.Sprite = this.add.sprite(500, 100, 'right-circle')
+        rightCircle.inputEnabled = true
+        rightCircle.events.onInputDown.add(() => {
+            m1.play()
+        }, this)
+        btn = this.add.sprite(this.game.world.centerX, this.game.world.centerY, 'start-btn')
+        this.game.world.add(btn, true)
+        btn.anchor.setTo(0.5)
+        btn.inputEnabled = true
+        btn.events.onInputDown.add(() => {
+            this.world.remove(btn)
+            this.state.start('s3')
+            clearSound()
+        }, this)
     }
 }
 class State3 extends Phaser.State {
     create() {
         let bg3H: Phaser.Sprite = this.add.sprite(0, 0, 'bg3-h')
+        let m2 = this.add.sound('m2')
+        audios.push(m2)
+        m2.play()
+        console.log(this.world.children)
+        console.log(btn)
+        this.game.world.add(btn)
     }
 }
 class State4 extends Phaser.State {
@@ -202,12 +247,35 @@ class Farm extends Phaser.Game {
         let boot = new BootInitState(1334, 646)
         super(1334, 646, Phaser.CANVAS, 'game')
         this.state.add('boot', boot)
-        this.state.add('preload', PreloadInitState)
+        this.state.add('preload', new PreloadInitState())
         this.state.add('s1', State1)
-        this.state.add('s2', State2)
-        this.state.add('s3', State3)
+        this.state.add('s2', new State2())
+        this.state.add('s3', new State3())
         this.state.add('s4', State4)
         this.state.start('boot')
+    }
+}
+
+function controlSound() {
+    if (mute) {
+        for (let i = 0; i < audios.length; i++) {
+            let val = audios[i]
+            val.mute = false
+        }
+        mute = false
+    } else {
+        for (let i = 0; i < audios.length; i++) {
+            let val = audios[i]
+            val.mute = true
+        }
+        mute = true
+    }
+}
+
+function clearSound() {
+    for (let i = 0; i < audios.length; i++) {
+        let val = audios[i]
+        val.destroy()
     }
 }
 new Farm()
