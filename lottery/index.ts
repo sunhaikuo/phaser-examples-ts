@@ -68,7 +68,7 @@ namespace Lottery {
         graphics: Phaser.Graphics
         processText: Phaser.Text
         preload() {
-            // window.game1 = this.game
+            window.game1 = this.game
             this.game.stage.backgroundColor = '#11e6cd'
             // this.load.script('zepton', './assets/zepto.min.js')
             // this.load.script('script', './assets/script.js')
@@ -83,6 +83,7 @@ namespace Lottery {
             this.game.load.image('ready1', './assets/ready-1.png')
             this.game.load.image('ready2', './assets/ready-2.png')
             this.game.load.image('ready3', './assets/ready-3.png')
+            this.load.audio('readyEnter', './assets/enter.wav')
             // 过渡动画
             this.load.image('transBg', './assets/trans-bg.png')
             this.load.image('trans1', './assets/trans-1.png')
@@ -107,6 +108,11 @@ namespace Lottery {
             this.load.spritesheet('playP6', './assets/play-p6.png', 1498 / 10, 262)
             this.load.spritesheet('playP7', './assets/play-p7.png', 1942 / 10, 204)
             this.load.spritesheet('playP8', './assets/play-p8.png', 1440 / 10, 274)
+            // 失败
+            this.game.load.image('failBg', './assets/count-bg.png')
+            this.game.load.image('failBtn', './assets/fail-btn.png')
+            this.game.load.image('failTip', './assets/fail-tip.png')
+            this.game.load.image('failWrap', './assets/fail-wrap.png')
             // 游戏统计
             this.game.load.image('countBg', './assets/count-bg.png')
             this.game.load.image('countTbl', './assets/count-tbl.png')
@@ -141,6 +147,7 @@ namespace Lottery {
             this.game.load.image('result2', './assets/result-2.png')
             this.game.load.image('result3', './assets/result-3.png')
             this.game.load.image('resultGxy', './assets/result-gxy.png')
+            this.load.audio('success', './assets/success.mp3')
             // 联系方式
             this.game.load.image('contactBg', './assets/contact-bg.png')
             this.game.load.image('contactClose', './assets/contact-close.png')
@@ -173,12 +180,16 @@ namespace Lottery {
                     processWrap.anchor.setTo(0.5)
                 } else {
                     this.graphics = this.game.add.graphics(0, 0)
-                    this.graphics.beginFill(0xffbd05, 1)
+                    this.graphics.beginFill(0xffbd05)
+                    // process = 10
+                    if (process < 10) {
+                        process = 10
+                    }
                     let width = 460 * (process / 100)
-                    // let width = 400
-                    this.graphics.drawRoundedRect(288, 305, width, 30, 18)
+                    // let width = 100
+                    this.graphics.drawRoundedRect(288, 305, width, 30, 50)
 
-                    this.graphics.drawCircle(302, 320, 30)
+                    // this.graphics.drawCircle(302, 320, 30)
                     if (this.processText) {
                         this.processText.kill()
                     }
@@ -197,6 +208,7 @@ namespace Lottery {
             // this.game.state.start('count')
             this.game.state.start('trans')
             // this.game.state.start('play')
+            // this.game.state.start('fail')
             // this.game.state.start('lottery')
             // this.game.state.start('count')
             // this.game.state.start('ready')
@@ -205,8 +217,9 @@ namespace Lottery {
     // 过渡动画
     class TranState extends Phaser.State {
         create() {
+            lotMusic = this.add.audio('lotAudio')
+            lotMusic.play()
             this.add.sprite(0, 0, 'transBg')
-
             let trans2 = this.add.sprite(207, 92, 'trans2')
             this.add.tween(trans2).from({
                 x: 1000,
@@ -226,7 +239,7 @@ namespace Lottery {
             //     }, 7000)
             // }, 2000)
             // this.time.events.destroy
-            let tm = this.time.events.repeat(500, 1, function () {
+            let tm = this.time.events.repeat(1000, 1, function () {
                 trans2.kill()
                 let trans1 = this.add.sprite(77, 22, 'trans1')
                 let tw = this.add.tween(trans1).from({ x: 1000, alpha: 0 }, 500, Phaser.Easing.Linear.None, true)
@@ -239,17 +252,18 @@ namespace Lottery {
                     let tm = this.time.events.loop(100, function () {
                         if (i > 80) {
                             if (i == 81) {
-                                let btn = this.add.sprite(615, 470, 'transWdl')
+                                let btn = this.add.sprite(440, 500, 'transWdl')
                                 btn.scale.setTo(0.8)
                                 btn.inputEnabled = true
                                 btn.events.onInputDown.add(() => {
+                                    lotMusic.destroy()
                                     this.state.start('ready')
                                 }, this)
                             }
                             return
                         }
                         if (i == 70) {
-                            this.add.sprite(255, 468, 'transBottom')
+                            this.add.sprite(255, 418, 'transBottom')
                         }
                         if (i <= 10) {
                             posiX = baseX + i * 32
@@ -263,7 +277,7 @@ namespace Lottery {
                             posiX = baseX + (i - 68) * 32
                         }
                         if (i == 11 || i == 30 || i == 49 || i == 69) {
-                            posiY += 68
+                            posiY += 55
                         }
                         this.add.sprite(posiX, posiY, 'transText' + i)
                         i++
@@ -276,18 +290,29 @@ namespace Lottery {
     class ReadyState extends Phaser.State {
         create() {
             this.game.add.sprite(0, 0, 'readyBg1')
-            this.add.sprite(515, 5, 'countMan')
+            // this.add.sprite(515, 5, 'countMan')
+            let man = this.add.sprite(480, 5, 'heat')
+            man.animations.add('manHeat', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, true).play()
             this.add.sprite(170, 46, 'readyOther')
+            let ready1 = this.add.sprite(693, 284, 'ready1')
+            this.add.tween(ready1).from({ x: 1466, alpha: 0 }, 500, "Linear", true)
+            this.add.sound('readyEnter').play()
+            this.time.events.repeat(100, 1, () => {
+                let ready2 = this.add.sprite(132, 400, 'ready2')
+                this.add.tween(ready2).from({ x: -100, y: 1000, alpha: 0 }, 500, "Linear", true)
+            }, this)
+            let ready3 = this.add.sprite(849, 0, 'ready3')
+            this.add.tween(ready3).from({ x: -100, y: 1000, alpha: 0 }, 500, "Linear", true)
 
+            this.add.sound('readyEnter').play()
             let startBtn = this.game.add.sprite(518, 560, 'readyBtn')
             startBtn.anchor.setTo(0.5)
             startBtn.inputEnabled = true
             let btn = startBtn.events.onInputDown.add(this.play, this)
-            this.add.tween(startBtn).to({ alpha: 0 }, 700, "Linear", true, 0, -1, true)
+            this.add.tween(startBtn).to({ alpha: 0 }, 800, "Linear", true, 0, -1, true)
         }
         play() {
-            bgMusic = this.add.audio('playAudio')
-            bgMusic.play()
+            lotMusic.destroy()
             this.state.start('play')
         }
     }
@@ -300,6 +325,8 @@ namespace Lottery {
         bgPic: Phaser.Sprite
         canPlay: boolean
         create() {
+            bgMusic = this.add.audio('playAudio')
+            bgMusic.play()
             this.canPlay = true
             this.bgPic = this.add.sprite(0, 0, 'playBg')
             this.add.sprite(408, 608, 'playTip')
@@ -416,7 +443,13 @@ namespace Lottery {
             let _this = this
             setTimeout(function () {
                 killCount = _this.personGroup.countLiving()
-                _this.state.start('count')
+                bgMusic.destroy()
+                if (killCount < 5) {
+                    _this.state.start('fail')
+                } else {
+                    _this.state.start('count')
+                }
+
             }, 800)
         }
         addQuake() {
@@ -444,9 +477,26 @@ namespace Lottery {
         //     this.game.debug.spriteBounds(this.zw);
         // }
     }
+    // 人数不足时，跳到此页
+    class FailState extends Phaser.State {
+        create() {
+            this.add.sprite(0, 0, 'failBg')
+            this.add.sprite(246, 30, 'failWrap')
+            this.add.sprite(369, 214, 'failTip')
+            this.add.sprite(282 + 30, 335, 'countWrap')
+            this.add.sprite(482 + 30, 335, 'number', killCount)
+            this.add.text(330, 385, '遗憾与中国移动A3s手机擦肩而过！', { fill: 'white', fontSize: 24 })
+            let btn = this.add.sprite(393, 496, 'failBtn')
+            btn.inputEnabled = true
+            btn.events.onInputDown.add(() => {
+                this.state.start('play')
+            }, this)
+        }
+    }
     // 游戏结果统计
     class CountState extends Phaser.State {
         create() {
+            this.add.sound('success').play()
             this.add.sprite(0, 0, 'countBg')
             let man = this.add.sprite(400, 15, 'heat')
             man.animations.add('manHeat', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, true).play()
@@ -699,6 +749,7 @@ namespace Lottery {
             this.state.add('trans', TranState)
             this.state.add('ready', ReadyState)
             this.state.add('play', PlayState)
+            this.state.add('fail', FailState)
             this.state.add('count', CountState)
             this.state.add('lottery', LotteryState)
             this.state.add('result', ResultState)
