@@ -3,14 +3,10 @@ let path = require('path')
 
 let width = 1334
 let height = 646
-let projectName = 'farm'
+let projectName = 'test'
 let assets = 'assets'
 let projectDesc = '一个测试的初始化例子'
 
-let preloadStartStr = 'preloadStart'
-let preloadEndStr = 'preloadEnd'
-let createStartStr = 'createStart'
-let createEndStr = 'createEnd'
 
 let rootPath = path.resolve(path.join('../', projectName))
 let assetsPath = path.resolve(path.join('../', projectName, 'assets'))
@@ -27,6 +23,7 @@ function start() {
         readerTS()
         readerHTML()
     }
+    console.log('-->服务启动成功！')
     update()
 }
 
@@ -61,16 +58,19 @@ function readerTS() {
     let className = upperCaseFirstWord(projectName)
     let result = `
     import { BootInitState } from '../common/BootInitState'
+    /* variableStart */
+    ${obj.variable}
+    /* variableEnd */
     class PreloadInitState extends Phaser.State {
         preload() {
-            // preloadStart
+            /* preloadStart */
             ${obj.preload}
-            // preloadEnd
+            /* preloadEnd */
         }
         create() {
-            // createStart
+            /* createStart */
            ${obj.create}
-           // createEnd
+           /* createEnd */
         }
     }
     class ${className} extends Phaser.Game {
@@ -89,31 +89,33 @@ function readerTS() {
 
 function getPreloadStr() {
     let preloadArr = []
+    let varArr = []
     let addArr = []
     for (let i = 0; i < variableNameArr.length; i++) {
         let variableName = variableNameArr[i]
         let relativePath = relativePathArr[i]
-        var val = ''
-        var load = 'image'
-        if (relativePath.indexOf('.mp3') > -1 || relativePath.indexOf('.wav') > -1) {
-            load = 'audio'
-        } else if (relativePath.indexOf('.mp4') > -1) {
-            load = 'video'
-        } else if (relativePath.indexOf('.js') > -1) {
-            load = 'script'
-        }
-        preloadArr.push(`this.load.${load}('${variableName}', '${relativePath}')`)
         let camelVal = createCamel(variableName)
-        addArr.push(`// let ${camelVal}: Phaser.Sprite = this.add.sprite(0, 0, '${variableName}')`)
+        var loadType = 'image'
+        if (['.mp3', '.wav'].indexOf(relativePath) > -1) {
+            loadType = 'audio'
+            varArr.push(`let ${camelVal}:Phaser.Sound`)
+        } else if (relativePath.indexOf('.mp4') > -1) {
+            loadType = 'video'
+            varArr.push(`let ${camelVal}:Phaser.Video`)
+        } else if (relativePath.indexOf('.js') > -1) {
+            loadType = 'script'
+        } else {
+            loadType = 'image'
+            varArr.push(`let ${camelVal}:Phaser.Sprite`)
+        }
+        preloadArr.push(`this.load.${loadType}('${variableName}', '${relativePath}')`)
+        addArr.push(`${camelVal} = this.add.sprite(0, 0, '${variableName}')`)
     }
     return {
         preload: preloadArr.join('\n'),
-        create: addArr.join('\n')
+        create: addArr.join('\n'),
+        variable: varArr.join('\n')
     }
-}
-
-function getCreateStr() {
-
 }
 
 function readerHTML() {
@@ -147,6 +149,7 @@ function update() {
             createFileArr()
             // 重新生成TS文件
             renderPreloadCreate()
+            console.log('---->文件更新成功，旧文件已备份！')
         }
     })
 }
@@ -167,8 +170,10 @@ function renderPreloadCreate() {
     let obj = getPreloadStr()
     let preloadStr = obj.preload
     let createStr = obj.create
-    resultArr.splice(indexObj.preloadStartIndex + 1, 0, preloadStr)
-    resultArr.splice(indexObj.createStartIndex + 2, 0, createStr)
+    let variableStr = obj.variable
+    resultArr.splice(indexObj.variableStartIndex + 1, 0, variableStr)
+    resultArr.splice(indexObj.preloadStartIndex + 2, 0, preloadStr)
+    resultArr.splice(indexObj.createStartIndex + 3, 0, createStr)
     fs.writeFileSync(path.join(rootPath, 'index.ts'), resultArr.join('\n'))
 }
 
@@ -184,6 +189,7 @@ function clearOldPreloadCreate() {
     let resultArr = resultStr.split('\n')
     resultArr.splice(indexObj.preloadStartIndex + 1, distance)
     resultArr.splice(indexObj.createStartIndex + 1, distance)
+    resultArr.splice(indexObj.variableStartIndex + 1, distance)
     fs.writeFileSync(path.join(rootPath, 'index.ts'), resultArr.join('\n'))
 }
 
@@ -192,28 +198,42 @@ function getIndex() {
         encoding: 'UTF-8'
     })
     let resultArr = resultStr.split('\n')
-    let preloadStartIndex = 0
-    let preloadEndIndex = 0
-    let createStartIndex = 0
-    let createEndIndex = 0
+    let indexObj = {
+        preloadStartIndex: -1,
+        preloadEndIndex: -1,
+        createStartIndex: -1,
+        createEndIndex: -1,
+        variableStartIndex: -1,
+        variableEndIndex: -1
+    }
+    let errorMsg = ''
     for (let i = 0; i < resultArr.length; i++) {
         let str = resultArr[i]
-        if (str.indexOf(preloadStartStr) > -1) {
-            preloadStartIndex = i
-        } else if (str.indexOf(preloadEndStr) > -1) {
-            preloadEndIndex = i
-        } else if (str.indexOf(createStartStr) > -1) {
-            createStartIndex = i
-        } else if (str.indexOf(createEndStr) > -1) {
-            createEndIndex = i
+        if (str.indexOf('preloadStart') > -1) {
+            indexObj.preloadStartIndex = i
+        } else if (str.indexOf('preloadEnd') > -1) {
+            indexObj.preloadEndIndex = i
+        } else if (str.indexOf('createStart') > -1) {
+            indexObj.createStartIndex = i
+        } else if (str.indexOf('createEnd') > -1) {
+            indexObj.createEndIndex = i
+        } else if (str.indexOf('variableStart') > -1) {
+            indexObj.variableStartIndex = i
+        } else if (str.indexOf('variableEnd') > -1) {
+            indexObj.variableEndIndex = i
         }
     }
-    return {
-        preloadStartIndex,
-        preloadEndIndex,
-        createStartIndex,
-        createEndIndex
+    for (let key in indexObj) {
+        if (indexObj[key] == -1) {
+            errorMsg = '未找到[' + key + ']的索引值'
+        }
     }
+    if (errorMsg != '') {
+        console.log(errorMsg)
+        return
+
+    }
+    return indexObj
 }
 
 function backupIndex() {
