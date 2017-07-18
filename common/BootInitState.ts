@@ -13,7 +13,7 @@ export class BootInitState extends Phaser.State {
         height = h
     }
     preload() {
-        this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL
+        this.game.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT
         this.getDirection()
         window.onorientationchange = this.getDirection
         this.game.scale.onOrientationChange.add(function () {
