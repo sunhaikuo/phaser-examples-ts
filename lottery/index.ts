@@ -7,6 +7,12 @@ let bgMusic
 let lotMusic
 let soundArr: Phaser.Sound[] = []
 let isMute: boolean
+// let mOpen: Phaser.Sprite
+// let mClose: Phaser.Sprite
+interface MyWindow extends Window {
+    myFunction(): void;
+}
+declare var window: MyWindow
 namespace Lottery {
     // 拍到多少个西瓜人
     let killCount = 0
@@ -16,6 +22,23 @@ namespace Lottery {
     let isOk = false
     let width = 1036
     let height = 640
+
+    // function musicInit() {
+    //     mOpen.inputEnabled = true
+    //     mOpen.events.onInputDown.add(() => {
+    //         mClose.inputEnabled = true
+    //         mOpen.inputEnabled = false
+    //         mClose.alpha = 1
+    //         mOpen.alpha = 0
+    //     })
+    //     mClose.events.onInputDown.add(() => {
+    //         mClose.inputEnabled = false
+    //         mOpen.inputEnabled = true
+    //         mClose.alpha = 0
+    //         mOpen.alpha = 1
+    //     })
+    // }
+
     class BootState extends Phaser.State {
         preload() {
             this.game.scale.scaleMode = Phaser.ScaleManager.EXACT_FIT
@@ -70,7 +93,7 @@ namespace Lottery {
         graphics: Phaser.Graphics
         processText: Phaser.Text
         preload() {
-            window.game1 = this.game
+            // window.game1 = this.game
             this.game.stage.backgroundColor = '#11e6cd'
             // this.load.script('zepton', './assets/zepto.min.js')
             // this.load.script('script', './assets/script.js')
@@ -149,7 +172,8 @@ namespace Lottery {
             this.game.load.image('result2', './assets/result-2.png')
             this.game.load.image('result3', './assets/result-3.png')
             this.game.load.image('resultGxy', './assets/result-gxy.png')
-            this.load.audio('success', './assets/success.mp3')
+            // this.load.audio('success', './assets/success.mp3')
+            this.load.audio('success', './assets/huanhu.wav')
             // 联系方式
             this.game.load.image('contactBg', './assets/contact-bg.png')
             this.game.load.image('contactClose', './assets/contact-close.png')
@@ -158,7 +182,8 @@ namespace Lottery {
             // 公共
             this.game.load.spritesheet('number', './assets/number.png', 26.2999, 29)
             this.game.load.spritesheet('heat', './assets/man-heat.png', 250, 260)
-
+            this.game.load.image('mOpen', './assets/music-open.png')
+            this.game.load.image('mClose', './assets/music-close.png')
             // 进度文字
             let style = {
                 font: "18px Arial",
@@ -175,11 +200,11 @@ namespace Lottery {
                     var loadMan = this.game.add.sprite(490, 240, 'loadMan')
                     this.add.tween(loadMan).to({ angle: 10 }, 400, "Linear", true, 0, -1).yoyo(true, 400)
                     loadMan.anchor.setTo(0.5)
-                    loadMan.z = 0
                 } else if (key == 'processWrap') {
                     // 进度外围
                     processWrap = this.game.add.sprite(518, 320, 'processWrap')
                     processWrap.anchor.setTo(0.5)
+                    processWrap.bringToTop()
                 } else {
                     this.graphics = this.game.add.graphics(0, 0)
                     this.graphics.beginFill(0xffbd05)
@@ -205,6 +230,10 @@ namespace Lottery {
             }, this)
         }
         create() {
+            // mOpen = this.add.sprite(950, 20, 'mOpen')
+            // mOpen.alpha = 0
+            // mClose = this.add.sprite(950, 20, 'mClose')
+            // mClose.alpha = 0
             // alert($)
             // this.game.state.start('ready')
             // this.game.state.start('count')
@@ -212,8 +241,10 @@ namespace Lottery {
             // this.game.state.start('play')
             // this.game.state.start('fail')
             // this.game.state.start('lottery')
-            // this.game.state.start('count')
+            // this.game.state.start('result')
             // this.game.state.start('ready')
+            // this.game.state.start('contact')
+
         }
     }
     // 过渡动画
@@ -286,6 +317,30 @@ namespace Lottery {
                     }, this)
                 }, this)
             }, this)
+            /* Music */
+            this.time.events.repeat(1200, 1, () => {
+                let mOpen = this.add.sprite(950, 20, 'mOpen')
+                let mClose = this.add.sprite(950, 20, 'mClose')
+                mClose.alpha = 0
+                mOpen.inputEnabled = true
+                mOpen.events.onInputDown.add(() => {
+                    mClose.inputEnabled = true
+                    mOpen.inputEnabled = false
+                    mClose.alpha = 1
+                    mOpen.alpha = 0
+                    lotMusic.mute = true
+                    isMute = true
+                })
+                mClose.events.onInputDown.add(() => {
+                    mClose.inputEnabled = false
+                    mOpen.inputEnabled = true
+                    mClose.alpha = 0
+                    mOpen.alpha = 1
+                    lotMusic.mute = false
+                    isMute = false
+                })
+            }, this)
+            /* Music */
         }
     }
     // 准备
@@ -298,7 +353,10 @@ namespace Lottery {
             this.add.sprite(170, 46, 'readyOther')
             let ready1 = this.add.sprite(693, 284, 'ready1')
             this.add.tween(ready1).from({ x: 1466, alpha: 0 }, 500, "Linear", true)
-            this.add.sound('readyEnter').play()
+            let shortMusic = this.add.sound('readyEnter').play()
+            if (isMute) {
+                shortMusic.mute = true
+            }
             this.time.events.repeat(100, 1, () => {
                 let ready2 = this.add.sprite(132, 400, 'ready2')
                 this.add.tween(ready2).from({ x: -100, y: 1000, alpha: 0 }, 500, "Linear", true)
@@ -306,12 +364,17 @@ namespace Lottery {
             let ready3 = this.add.sprite(849, 0, 'ready3')
             this.add.tween(ready3).from({ x: -100, y: 1000, alpha: 0 }, 500, "Linear", true)
 
-            this.add.sound('readyEnter').play()
+            let music = this.add.sound('readyEnter').play()
+            if (isMute) {
+                music.mute = true
+            }
             let startBtn = this.game.add.sprite(518, 560, 'readyBtn')
             startBtn.anchor.setTo(0.5)
             startBtn.inputEnabled = true
             let btn = startBtn.events.onInputDown.add(this.play, this)
             this.add.tween(startBtn).to({ alpha: 0 }, 800, "Linear", true, 0, -1, true)
+            // let m = new Music()
+            // m.init()
         }
         play() {
             lotMusic.destroy()
@@ -327,8 +390,6 @@ namespace Lottery {
         bgPic: Phaser.Sprite
         canPlay: boolean
         create() {
-            bgMusic = this.add.audio('playAudio')
-            bgMusic.play()
             this.canPlay = true
             this.bgPic = this.add.sprite(0, 0, 'playBg')
             this.add.sprite(408, 608, 'playTip')
@@ -351,6 +412,42 @@ namespace Lottery {
             let zwTw = this.add.tween(this.zw)
             zwTw.to({ alpha: 0 }, 500, "Linear", true, 0, -1).yoyo(true, 500)
             this.startTm = 0
+
+            /* Music */
+            bgMusic = this.add.audio('playAudio')
+            bgMusic.play()
+            if (isMute) {
+                bgMusic.mute = true
+            }
+            this.time.events.repeat(1200, 1, () => {
+                let mOpen = this.add.sprite(950, 20, 'mOpen')
+                let mClose = this.add.sprite(950, 20, 'mClose')
+                if (isMute) {
+                    mOpen.alpha = 0
+                    mClose.alpha = 1
+                } else {
+                    mOpen.alpha = 1
+                    mClose.alpha = 0
+                }
+                mOpen.inputEnabled = true
+                mOpen.events.onInputDown.add(() => {
+                    mClose.inputEnabled = true
+                    mOpen.inputEnabled = false
+                    mClose.alpha = 1
+                    mOpen.alpha = 0
+                    bgMusic.mute = true
+                    isMute = true
+                })
+                mClose.events.onInputDown.add(() => {
+                    mClose.inputEnabled = false
+                    mOpen.inputEnabled = true
+                    mClose.alpha = 0
+                    mOpen.alpha = 1
+                    bgMusic.mute = false
+                    isMute = false
+                })
+            }, this)
+            /* Music */
         }
         update() {
             var now = +(new Date())
@@ -442,6 +539,9 @@ namespace Lottery {
             bgMusic.stop()
             let aud = this.add.audio('playCam')
             aud.play()
+            if (isMute) {
+                aud.mute = true
+            }
             let _this = this
             setTimeout(function () {
                 killCount = _this.personGroup.countLiving()
@@ -451,7 +551,6 @@ namespace Lottery {
                 } else {
                     _this.state.start('count')
                 }
-
             }, 800)
         }
         addQuake() {
@@ -498,7 +597,10 @@ namespace Lottery {
     // 游戏结果统计
     class CountState extends Phaser.State {
         create() {
-            this.add.sound('success').play()
+            let music = this.add.sound('success').play()
+            if (isMute) {
+                music.mute = true
+            }
             this.add.sprite(0, 0, 'countBg')
             let man = this.add.sprite(400, 15, 'heat')
             man.animations.add('manHeat', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, true).play()
@@ -529,8 +631,6 @@ namespace Lottery {
             this.state.start('play')
         }
         lotter() {
-            lotMusic = this.add.audio('lotAudio')
-            lotMusic.play()
             this.state.start('lottery')
         }
     }
@@ -586,6 +686,41 @@ namespace Lottery {
                 this.borderGroup.create(posi.x, posi.y, 'lotBorder', 0)
             }
             this.game.add.button(277, 252, 'lotBtn', this.lottery, this)
+            lotMusic = this.add.audio('lotAudio')
+            lotMusic.play()
+            if (isMute) {
+                lotMusic.mute = true
+            }
+            /* Music */
+            this.time.events.repeat(1200, 1, () => {
+                let mOpen = this.add.sprite(950, 20, 'mOpen')
+                let mClose = this.add.sprite(950, 20, 'mClose')
+                if (isMute) {
+                    mOpen.alpha = 0
+                    mClose.alpha = 1
+                } else {
+                    mOpen.alpha = 1
+                    mClose.alpha = 0
+                }
+                mOpen.inputEnabled = true
+                mOpen.events.onInputDown.add(() => {
+                    mClose.inputEnabled = true
+                    mOpen.inputEnabled = false
+                    mClose.alpha = 1
+                    mOpen.alpha = 0
+                    lotMusic.mute = true
+                    isMute = true
+                })
+                mClose.events.onInputDown.add(() => {
+                    mClose.inputEnabled = false
+                    mOpen.inputEnabled = true
+                    mClose.alpha = 0
+                    mOpen.alpha = 1
+                    lotMusic.mute = false
+                    isMute = false
+                })
+            }, this)
+            /* Music */
         }
         update() {
             var now = +(new Date())
@@ -689,10 +824,14 @@ namespace Lottery {
     // 抽奖结果
     class ResultState extends Phaser.State {
         create() {
-            lotMusic.stop()
+            if (lotMusic) {
+                lotMusic.stop()
+            }
             this.game.add.sprite(0, 0, 'resultBg')
             this.add.sprite(0, 0, 'countBg')
-            let man = this.add.sprite(444, 15, 'countMan')
+            // let man = this.add.sprite(444, 15, 'countMan')
+            let man = this.add.sprite(444, 15, 'heat')
+            man.animations.add('manHeat', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, true).play()
             this.add.tween(man).from({
                 y: -200,
                 alpha: 0
@@ -712,8 +851,21 @@ namespace Lottery {
                 learn.x = 400
             } else if (userReward < 3) {
                 this.game.add.sprite(333, 342, 'result' + userReward)
+                // let music = this.add.sound('success').play()
+                // if (isMute) {
+                //     music.mute = true
+                // }
             } else {
                 this.game.add.sprite(285, 342, 'result' + userReward)
+                // let music = this.add.sound('success').play()
+                // if (isMute) {
+                //     music.mute = true
+                // }
+            }
+            let music = this.add.sound('success').play()
+            console.log(window.isReturn)
+            if (isMute || window.isReturn) {
+                music.mute = true
             }
             // close.inputEnabled = true
             // close.events.onInputDown.add(this.close, this)
@@ -738,6 +890,7 @@ namespace Lottery {
     }
     class ContactState extends Phaser.State {
         create() {
+            window.game1 = this.game
             $('#game').hide()
             $('#contact').show()
         }
