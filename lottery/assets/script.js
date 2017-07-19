@@ -1,3 +1,4 @@
+var isReturn = false
 $(function () {
     var $input = $('.input')
     $input.on('click', function () {
@@ -20,6 +21,9 @@ $(function () {
         }
     })
     $('#close').on('click', function () {
+        isReturn = true
+        $('#game').show()
+        $("#contact").hide()
         window.game1.state.start("result")
     })
     $('#confirm').on('click', function () {
@@ -40,6 +44,9 @@ $(function () {
             $.getJSON('http://lf.tongchuangjob.com/Moblie/moblie/saveUserInfo', param, function (data) {
                 if (data.result == 'success') {
                     alert('您的信息保存成功，历时将有工作人员与您联系核实信息，请耐心等待！')
+                    isReturn = true
+                    $('#game').show()
+                    $("#contact").hide()
                     window.game1.state.start("result")
                 } else {
                     alert('网络错误！')
