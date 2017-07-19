@@ -180,7 +180,7 @@ namespace Lottery {
             this.game.load.image('contactConfirm', './assets/contact-confirm.png')
 
             // 公共
-            this.game.load.spritesheet('number', './assets/number.png', 26.2999, 29)
+            this.game.load.spritesheet('number', './assets/number.png', 270 / 10, 29)
             this.game.load.spritesheet('heat', './assets/man-heat.png', 250, 260)
             this.game.load.image('mOpen', './assets/music-open.png')
             this.game.load.image('mClose', './assets/music-close.png')
@@ -191,20 +191,27 @@ namespace Lottery {
                 wordWrap: true,
                 align: "center"
             }
+            var processWrap
+            let lz = 0
+            let pz = 0
             // 加载进度
             this.game.load.onFileComplete.add(function (process, key) {
                 // 进度外围
-                var processWrap
                 if (key == 'loadMan') {
+                    console.log(1)
                     // 人物
-                    var loadMan = this.game.add.sprite(490, 240, 'loadMan')
+                    var loadMan = this.game.add.sprite(510, 240, 'loadMan')
                     this.add.tween(loadMan).to({ angle: 10 }, 400, "Linear", true, 0, -1).yoyo(true, 400)
                     loadMan.anchor.setTo(0.5)
+                    lz = loadMan.z
+                    console.log('--loadMan--' + loadMan.z)
                 } else if (key == 'processWrap') {
+                    console.log(2)
                     // 进度外围
                     processWrap = this.game.add.sprite(518, 320, 'processWrap')
                     processWrap.anchor.setTo(0.5)
-                    processWrap.bringToTop()
+                    pz = processWrap.z
+                    console.log('--processWrap--' + processWrap.z)
                 } else {
                     this.graphics = this.game.add.graphics(0, 0)
                     this.graphics.beginFill(0xffbd05)
@@ -212,24 +219,41 @@ namespace Lottery {
                     if (process < 10) {
                         process = 10
                     }
-                    let width = 460 * (process / 100)
-                    // let width = 100
-                    this.graphics.drawRoundedRect(288, 305, width, 30, 50)
-
-                    // this.graphics.drawCircle(302, 320, 30)
-                    if (this.processText) {
-                        this.processText.kill()
+                    if (processWrap && (lz > pz)) {
+                        lz = 0
+                        pz = 1
+                        processWrap.bringToTop()
                     }
-                    this.processText = this.game.add.text(518, 320, '0%', style)
-                    this.processText.anchor.set(0.5)
-                    this.processText.text = process + '%'
-                    this.processText.bringToTop()
-                    // this.game.world.bringToTop(this.processText)
+                    if (lz == 0 && pz == 1) {
+                        let width = 460 * (process / 100)
+                        // let width = 100
+                        this.graphics.drawRoundedRect(288, 305, width, 30, 50)
+                        // rect.bringToTop()
+                        // this.graphics.drawCircle(302, 320, 30)
+                        if (this.processText) {
+                            this.processText.kill()
+                        }
+                        this.processText = this.game.add.text(518, 324, '0%', style)
+                        this.processText.anchor.set(0.5)
+                        this.processText.text = process + '%'
+                        this.processText.bringToTop()
+                        // this.game.world.bringToTop(this.processText)
+                        if (process == 100) {
+                            let txt = this.add.text(400, 498, '点击屏幕继续游戏...', { fill: 'white', fontSize: 28 })
+                            this.add.tween(txt).to({
+                                alpha: 0
+                            }, 1500, "Linear", true, 0, -1, true)
+                        }
+                    }
                 }
 
             }, this)
         }
         create() {
+            this.game.input.enabled = true
+            this.game.input.onDown.add(() => {
+                this.game.state.start('trans')
+            }, this)
             // mOpen = this.add.sprite(950, 20, 'mOpen')
             // mOpen.alpha = 0
             // mClose = this.add.sprite(950, 20, 'mClose')
@@ -237,7 +261,7 @@ namespace Lottery {
             // alert($)
             // this.game.state.start('ready')
             // this.game.state.start('count')
-            this.game.state.start('trans')
+            // this.game.state.start('trans')
             // this.game.state.start('play')
             // this.game.state.start('fail')
             // this.game.state.start('lottery')
@@ -830,7 +854,7 @@ namespace Lottery {
             this.game.add.sprite(0, 0, 'resultBg')
             this.add.sprite(0, 0, 'countBg')
             // let man = this.add.sprite(444, 15, 'countMan')
-            let man = this.add.sprite(444, 15, 'heat')
+            let man = this.add.sprite(400, 15, 'heat')
             man.animations.add('manHeat', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, true).play()
             this.add.tween(man).from({
                 y: -200,
