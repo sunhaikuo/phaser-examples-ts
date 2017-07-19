@@ -44,4 +44,4 @@ jspm_packages
 
 # Output of 'npm pack'
 *.tgz
-lottery/.DS_Store
+*/.DS_Store
