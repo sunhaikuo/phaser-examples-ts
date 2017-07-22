@@ -3,12 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>抽奖小游戏</title>
+    <title>淘气西瓜人</title>
     <script src="./assets/common.js"></script>
     <link rel="stylesheet" href="./assets/common.css">
 </head>
 
 <body>
+    <audio id="startAudio" autoplay src="./assets/lot-audio.mp3"></audio>
     <div id="tip">
         正在分析手机性能...
     </div>
@@ -31,6 +32,15 @@
     <script type="text/javascript" src="./assets/zepto.min.js"></script>
     <script type="text/javascript" src="./assets/script.js?46456"></script>
     <script type="text/javascript" src="./assets/share.js"></script>
+    <script>
+        wx.ready(function () {
+            console.log('adfs')
+            var startAudio = document.getElementById('startAudio')
+            if (startAudio) {
+                startAudio.play()
+            }
+        })
+    </script>
 </body>
 
 </html>
