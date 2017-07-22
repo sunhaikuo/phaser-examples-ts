@@ -194,6 +194,7 @@ namespace Lottery {
             var processWrap
             let lz = 0
             let pz = 0
+            let debugTx
             // 加载进度
             this.game.load.onFileComplete.add(function (process, key) {
                 // 进度外围
@@ -219,12 +220,16 @@ namespace Lottery {
                     if (process < 10) {
                         process = 10
                     }
+                    if (debugTx) {
+                        debugTx.kill()
+                    }
+                    // debugTx = this.add.text(100, 100, 'lz:' + lz + '  pz:' + pz)
                     if (processWrap && (lz > pz)) {
                         lz = 0
                         pz = 1
                         processWrap.bringToTop()
                     }
-                    if (lz == 0 && pz == 1) {
+                    if (lz == 0 && pz >= 1) {
                         let width = 460 * (process / 100)
                         // let width = 100
                         this.graphics.drawRoundedRect(288, 305, width, 30, 50)
@@ -282,7 +287,7 @@ namespace Lottery {
                 x: 1000,
                 y: 1000, alpha: 0
                 // }, 1500, Phaser.Easing.Bounce.Out, true)
-            }, 100, Phaser.Easing.Bounce.Out, true)
+            }, 1500, Phaser.Easing.Bounce.Out, true)
             // let _this = this
             // window.setTimeout(function () {
 
@@ -296,7 +301,7 @@ namespace Lottery {
             //     }, 7000)
             // }, 2000)
             // this.time.events.destroy
-            let tm = this.time.events.repeat(1000, 1, function () {
+            let tm = this.time.events.repeat(2000, 1, function () {
                 trans2.kill()
                 let trans1 = this.add.sprite(77, 22, 'trans1')
                 let tw = this.add.tween(trans1).from({ x: 1000, alpha: 0 }, 500, Phaser.Easing.Linear.None, true)
@@ -644,8 +649,8 @@ namespace Lottery {
             if (killCount > 9) {
                 killCount = 9
             }
-            this.add.sprite(482, 335, 'number', killCount)
-            this.add.sprite(282, 335, 'countWrap')
+            this.add.sprite(482 + 30, 335, 'number', killCount)
+            this.add.sprite(282 + 30, 335, 'countWrap')
             // this.add.text(282, 335, '恭喜你共拍到了' + killCount + '个西瓜人！', { fill: '#fff', fontSize: 36 })
             this.add.text(280, 400, '打败了全国 ' + radio + '% 的玩家！您获得了一次抽奖机会！', {
                 fill: '#fff', fontSize: 22
