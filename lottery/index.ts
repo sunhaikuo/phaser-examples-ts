@@ -449,6 +449,37 @@ namespace Lottery {
             this.add.tween(startBtn).to({ alpha: 0 }, 800, "Linear", true, 0, -1, true)
             // let m = new Music()
             // m.init()
+
+            /* Music */
+            this.time.events.repeat(1200, 1, () => {
+                let mOpen = this.add.sprite(950, 20, 'mOpen')
+                let mClose = this.add.sprite(950, 20, 'mClose')
+                if (isMute) {
+                    mOpen.alpha = 0
+                    mClose.alpha = 1
+                } else {
+                    mOpen.alpha = 1
+                    mClose.alpha = 0
+                }
+                mOpen.inputEnabled = true
+                mOpen.events.onInputDown.add(() => {
+                    mClose.inputEnabled = true
+                    mOpen.inputEnabled = false
+                    mClose.alpha = 1
+                    mOpen.alpha = 0
+                    music.mute = true
+                    isMute = true
+                })
+                mClose.events.onInputDown.add(() => {
+                    mClose.inputEnabled = false
+                    mOpen.inputEnabled = true
+                    mClose.alpha = 0
+                    mOpen.alpha = 1
+                    music.mute = false
+                    isMute = false
+                })
+            }, this)
+            /* Music */
         }
         play() {
             var startAudio = document.getElementById('startAudio')
@@ -675,6 +706,37 @@ namespace Lottery {
             btn.events.onInputDown.add(() => {
                 this.state.start('play')
             }, this)
+
+            /* Music */
+            this.time.events.repeat(200, 1, () => {
+                let mOpen = this.add.sprite(950, 20, 'mOpen')
+                let mClose = this.add.sprite(950, 20, 'mClose')
+                if (isMute) {
+                    mOpen.alpha = 0
+                    mClose.alpha = 1
+                } else {
+                    mOpen.alpha = 1
+                    mClose.alpha = 0
+                }
+                mOpen.inputEnabled = true
+                mOpen.events.onInputDown.add(() => {
+                    mClose.inputEnabled = true
+                    mOpen.inputEnabled = false
+                    mClose.alpha = 1
+                    mOpen.alpha = 0
+                    music.mute = true
+                    isMute = true
+                })
+                mClose.events.onInputDown.add(() => {
+                    mClose.inputEnabled = false
+                    mOpen.inputEnabled = true
+                    mClose.alpha = 0
+                    mOpen.alpha = 1
+                    music.mute = false
+                    isMute = false
+                })
+            }, this)
+            /* Music */
         }
     }
     // 游戏结果统计
@@ -709,6 +771,38 @@ namespace Lottery {
             this.add.text(280, 400, '打败了全国 ' + radio + '% 的玩家！您获得了一次抽奖机会！', {
                 fill: '#fff', fontSize: 22
             })
+
+
+            /* Music */
+            this.time.events.repeat(200, 1, () => {
+                let mOpen = this.add.sprite(950, 20, 'mOpen')
+                let mClose = this.add.sprite(950, 20, 'mClose')
+                if (isMute) {
+                    mOpen.alpha = 0
+                    mClose.alpha = 1
+                } else {
+                    mOpen.alpha = 1
+                    mClose.alpha = 0
+                }
+                mOpen.inputEnabled = true
+                mOpen.events.onInputDown.add(() => {
+                    mClose.inputEnabled = true
+                    mOpen.inputEnabled = false
+                    mClose.alpha = 1
+                    mOpen.alpha = 0
+                    music.mute = true
+                    isMute = true
+                })
+                mClose.events.onInputDown.add(() => {
+                    mClose.inputEnabled = false
+                    mOpen.inputEnabled = true
+                    mClose.alpha = 0
+                    mOpen.alpha = 1
+                    music.mute = false
+                    isMute = false
+                })
+            }, this)
+            /* Music */
         }
         close() {
             this.state.start('play')
@@ -980,6 +1074,38 @@ namespace Lottery {
                 // 重置抽奖结果
                 userReward = 0
             }
+
+
+            /* Music */
+            this.time.events.repeat(200, 1, () => {
+                let mOpen = this.add.sprite(950, 20, 'mOpen')
+                let mClose = this.add.sprite(950, 20, 'mClose')
+                if (isMute) {
+                    mOpen.alpha = 0
+                    mClose.alpha = 1
+                } else {
+                    mOpen.alpha = 1
+                    mClose.alpha = 0
+                }
+                mOpen.inputEnabled = true
+                mOpen.events.onInputDown.add(() => {
+                    mClose.inputEnabled = true
+                    mOpen.inputEnabled = false
+                    mClose.alpha = 1
+                    mOpen.alpha = 0
+                    lotMusic.mute = true
+                    isMute = true
+                })
+                mClose.events.onInputDown.add(() => {
+                    mClose.inputEnabled = false
+                    mOpen.inputEnabled = true
+                    mClose.alpha = 0
+                    mOpen.alpha = 1
+                    lotMusic.mute = false
+                    isMute = false
+                })
+            }, this)
+            /* Music */
         }
         close() {
             this.state.start('lottery')
