@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "fs-extra": "^3.0.1",
+    "get-pixels": "^3.3.0",
     "requirejs": "^2.3.3"
   },
   "devDependencies": {

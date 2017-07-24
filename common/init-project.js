@@ -1,6 +1,6 @@
 let fs = require('fs-extra')
 let path = require('path')
-
+var getPixels = require("get-pixels")
 let width = 1334
 let height = 646
 let projectName = 'test'
@@ -45,12 +45,37 @@ function createFileArr() {
                 let variableName = file.substr(0, file.indexOf('.'))
                 variableNameArr.push(variableName)
             }
-
         } else if (fileStat.isDirectory()) {
             console.log(path.join(assetsPath, file))
             readFileTS(path.join(assetsPath, file))
         }
     })
+}
+
+// spritesheet/image/audio/video
+function getFileType(fileName) {
+    let obj = {}
+    let loadType = ''
+    let spCnt = 0
+    let fileType = fileName.substr(fileName.lastIndexOf('.'))
+    if (['.mp3', '.wav'].indexOf(fileType) > -1) {
+        loadType = 'audio'
+    } else if (fileType.indexOf('.mp4') > -1) {
+        loadType = 'video'
+    } else if (['.jpg', '.png', 'gif'].indexOf(fileType) > -1) {
+        if (fileName.indexOf('-sp-') > -1) {
+            loadType = 'spritesheet'
+            spCnt = fileName.split('-sp-')[1].split('.')[0]
+            obj.cnt = spCnt
+        } else {
+            loadType = 'image'
+        }
+    } else {
+        throw new Error('No Matched Type:' + fileType)
+    }
+    obj.type = loadType
+    obj.variableName = fileName.substr(0, fileName.lastIndexOf('.'))
+    return obj
 }
 
 function readerTS() {
@@ -187,9 +212,9 @@ function clearOldPreloadCreate() {
         encoding: 'UTF-8'
     })
     let resultArr = resultStr.split('\n')
+    resultArr.splice(indexObj.variableStartIndex + 1, distance)
     resultArr.splice(indexObj.preloadStartIndex + 1, distance)
     resultArr.splice(indexObj.createStartIndex + 1, distance)
-    resultArr.splice(indexObj.variableStartIndex + 1, distance)
     fs.writeFileSync(path.join(rootPath, 'index.ts'), resultArr.join('\n'))
 }
 
@@ -231,7 +256,6 @@ function getIndex() {
     if (errorMsg != '') {
         console.log(errorMsg)
         return
-
     }
     return indexObj
 }
