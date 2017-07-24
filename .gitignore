@@ -46,3 +46,4 @@ jspm_packages
 *.tgz
 */.DS_Store
 lottery/.DS_Store
+test/*
