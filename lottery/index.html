@@ -3,13 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>抽奖小游戏</title>
+    <title>淘气的西瓜人</title>
     <script src="./assets/common.js"></script>
-    <link rel="stylesheet" href="./assets/common.css">
-    <meta name="viewport" content="initial-scale=0.5, maximum-scale=0.5, minimum-scale=0.5, user-scalable=no">
+    <link rel="stylesheet" href="./assets/common.css?24234234">
 </head>
 
 <body>
+    <audio id="startAudio" autoplay src="./assets/lot-audio.mp3"></audio>
     <div id="tip">
         正在分析手机性能...
     </div>
@@ -27,11 +27,19 @@
     </div>
     <div id="game"></div>
     <script src="./assets/phaser.min.js"></script>
-    <script src="../build/lottery/index.js?id=23241234"></script>
+    <script src="../build/lottery/index.js?id=457345634"></script>
     <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
     <script type="text/javascript" src="./assets/zepto.min.js"></script>
-    <script type="text/javascript" src="./assets/script.js?5674"></script>
+    <script type="text/javascript" src="./assets/script.js?456435"></script>
     <script type="text/javascript" src="./assets/share.js"></script>
+    <script>
+        wx.ready(function () {
+            var startAudio = document.getElementById('startAudio')
+            if (startAudio) {
+                startAudio.play()
+            }
+        })
+    </script>
 </body>
 
 </html>
