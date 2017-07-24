@@ -9,10 +9,12 @@ let soundArr: Phaser.Sound[] = []
 let isMute: boolean
 // let mOpen: Phaser.Sprite
 // let mClose: Phaser.Sprite
-interface MyWindow extends Window {
-    myFunction(): void;
-}
-declare var window: MyWindow
+// interface MyWindow extends Window {
+//     myFunction(): void;
+// }
+// declare var window: MyWindow
+let startAudio: any
+
 namespace Lottery {
     // 拍到多少个西瓜人
     let killCount = 0
@@ -222,7 +224,7 @@ namespace Lottery {
                     this.time.events.repeat(2000, 1, () => {
                         let mOpen = this.add.sprite(950, 20, 'mOpen')
                         let mClose = this.add.sprite(950, 20, 'mClose')
-                        var startAudio = document.getElementById('startAudio')
+                        var startAudio: any = document.getElementById('startAudio')
                         mClose.alpha = 0
                         mOpen.inputEnabled = true
                         mOpen.events.onInputDown.add(() => {
@@ -231,6 +233,7 @@ namespace Lottery {
                             mClose.alpha = 1
                             mOpen.alpha = 0
                             // lotMusic.mute = true
+                            //  (<any>startAudio)
                             startAudio.muted = true
                             isMute = true
                         })
@@ -291,7 +294,7 @@ namespace Lottery {
             // this.game.input.onDown.add(() => {
             //     this.game.state.start('ready')
             // }, this)
-            this.game.state.start('trans')
+            this.game.state.start('play')
             // mOpen = this.add.sprite(950, 20, 'mOpen')
             // mOpen.alpha = 0
             // mClose = this.add.sprite(950, 20, 'mClose')
@@ -351,7 +354,7 @@ namespace Lottery {
                                 btn.inputEnabled = true
                                 btn.events.onInputDown.add(() => {
                                     // lotMusic.destroy()
-                                    var startAudio = document.getElementById('startAudio')
+                                    var startAudio: any = document.getElementById('startAudio')
                                     startAudio.muted = true
                                     this.state.start('ready')
                                 }, this)
@@ -384,7 +387,7 @@ namespace Lottery {
             this.time.events.repeat(2000, 1, () => {
                 let mOpen = this.add.sprite(950, 20, 'mOpen')
                 let mClose = this.add.sprite(950, 20, 'mClose')
-                var startAudio = document.getElementById('startAudio')
+                var startAudio: any = document.getElementById('startAudio')
                 if (isMute) {
                     mOpen.alpha = 0
                     mClose.inputEnabled = true
@@ -482,7 +485,7 @@ namespace Lottery {
             /* Music */
         }
         play() {
-            var startAudio = document.getElementById('startAudio')
+            var startAudio: any = document.getElementById('startAudio')
             startAudio.muted = true
             // lotMusic.destroy()
             this.state.start('play')
@@ -504,7 +507,7 @@ namespace Lottery {
             let tip = this.add.sprite(408, 608, 'playTip')
             this.add.tween(tip).to({ alpha: 0 }, 500, "Linear", true, 0, -1).yoyo(true, 500)
             this.personGroup = this.add.physicsGroup(Phaser.Physics.ARCADE)
-            this.personGroup.createMultiple(10, ['playP1', 'playP2', 'playP3', 'playP4', 'playP5', 'playP6', 'playP7', 'playP8'])
+            this.personGroup.createMultiple(8, ['playP1', 'playP2', 'playP3', 'playP4', 'playP5', 'playP6', 'playP7', 'playP8'])
             this.personGroup.enableBody = true
             // 设置自动销毁 1.超出屏幕 2.
             this.personGroup.setAll('body.collideWorldBounds', false)
@@ -587,8 +590,8 @@ namespace Lottery {
                 var rnIndex = this.game.rnd.integerInRange(0, edge.length - 1)
                 var x = edge[rnIndex].x
                 var y = edge[rnIndex].y
-                var speedX = this.game.rnd.integerInRange(50, 200)
-                var speedY = this.game.rnd.integerInRange(50, 200)
+                var speedX = this.game.rnd.integerInRange(50, 300)
+                var speedY = this.game.rnd.integerInRange(50, 300)
                 var middleX = x > this.game.width / 2 ? true : false
                 var middleY = y > this.game.height / 2 ? true : false
                 if (rnIndex == 0) {
@@ -1019,7 +1022,7 @@ namespace Lottery {
             } else {
                 // 音效
                 let music = this.add.sound('success').play()
-                if (isMute || window.isReturn) {
+                if (isMute || (<any>window).isReturn) {
                     music.mute = true
                 }
                 // 动人
@@ -1060,7 +1063,7 @@ namespace Lottery {
                 //     music.mute = true
                 // }
             }
-            if (userReward == 0 || userReward == -1 || window.isReturn) {
+            if (userReward == 0 || userReward == -1 || (<any>window).isReturn) {
                 reward.alpha = 0
                 learn.x = 400
             }
@@ -1070,7 +1073,7 @@ namespace Lottery {
             reward.events.onInputDown.add(this.reward, this)
             learn.inputEnabled = true
             learn.events.onInputDown.add(this.learn, this)
-            if (window.isReturn) {
+            if ((<any>window).isReturn) {
                 // 重置抽奖结果
                 userReward = 0
             }
@@ -1121,7 +1124,8 @@ namespace Lottery {
     }
     class ContactState extends Phaser.State {
         create() {
-            window.game1 = this.game
+            //TODO
+            // window.game1 = this.game
             $('#game').hide()
             $('#contact').show()
         }
