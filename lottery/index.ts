@@ -449,7 +449,7 @@ namespace Lottery {
         create() {
             this.game.add.sprite(0, 0, 'readyBg1')
             // this.add.sprite(515, 5, 'countMan')
-            let man = this.add.sprite(480, 5, 'heat')
+            let man = this.add.sprite(480, 30, 'heat')
             man.scale.setTo(0.9)
             man.animations.add('manHeat', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, true).play()
             let readyOther = this.add.sprite(170, 80, 'readyOther')
