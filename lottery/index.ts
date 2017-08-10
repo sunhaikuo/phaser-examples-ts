@@ -340,7 +340,7 @@ namespace Lottery {
             //     }, 7000)
             // }, 2000)
             // this.time.events.destroy
-            let tm = this.time.events.repeat(2000, 1, function () {
+            let tm = this.time.events.repeat(3000, 1, function () {
                 trans2.kill()
                 let trans1 = this.add.sprite(77, 22, 'trans1')
                 let tw = this.add.tween(trans1).from({ x: 1000, alpha: 0 }, 500, Phaser.Easing.Linear.None, true)
@@ -349,64 +349,86 @@ namespace Lottery {
                 let posiX = baseX
                 let posiY = baseY
                 let i = 0
-                let posiArr = [{ x: 201, y: 233 }, { x: 201, y: 285 }, { x: 201, y: 340 }, { x: 201, y: 402 }, { x: 201, y: 458 }]
+                // let posiArr = [{ x: 201, y: 233 }, { x: 201, y: 285 }, { x: 201, y: 340 }, { x: 201, y: 402 }, { x: 201, y: 458 }]
                 tw.onComplete.add(function () {
-                    let tm = this.time.events.repeat(1000, 5, function () {
-                        let trant = this.add.sprite(posiArr[i].x, posiArr[i].y, 'transT' + (i + 1))
-                        let tw = this.add.tween(trant).from({
+                    // this.time.events.repeat(1000, 5, function () {
+                    // })
+                    let transText = this.add.sprite(201, 213, 'transText')
+                    let tw = this.add.tween(transText).from({
+                        alpha: 0
+                    }, 500, 'Linear', true)
+                    tw.onComplete.add(() => {
+                        let btn = this.add.sprite(420, 480, 'transWdl')
+                        this.add.tween(btn).from({
                             alpha: 0
                         }, 500, 'Linear', true)
-                        i++
-                        if (i == 5) {
-                            tw.onComplete.add(() => {
-                                let btn = this.add.sprite(440, 500, 'transWdl')
-                                this.add.tween(btn).from({
-                                    alpha: 0
-                                }, 500, 'Linear', true)
-                                btn.scale.setTo(0.8)
-                                btn.inputEnabled = true
-                                btn.events.onInputDown.add(() => {
-                                    // lotMusic.destroy()
-                                    var startAudio: any = document.getElementById('startAudio')
-                                    startAudio.muted = true
-                                    this.state.start('ready')
-                                }, this)
-                            })
-                        }
-                        // if (i > 80) {
-                        //     if (i == 81) {
-                        //         let btn = this.add.sprite(440, 500, 'transWdl')
-                        //         btn.scale.setTo(0.8)
-                        //         btn.inputEnabled = true
-                        //         btn.events.onInputDown.add(() => {
-                        //             // lotMusic.destroy()
-                        //             var startAudio: any = document.getElementById('startAudio')
-                        //             startAudio.muted = true
-                        //             this.state.start('ready')
-                        //         }, this)
-                        //     }
-                        //     return
-                        // }
-                        // // if (i == 70) {
-                        // //     this.add.sprite(255, 418, 'transBottom')
-                        // // }
-                        // if (i <= 10) {
-                        //     posiX = baseX + 120 + i * 32
-                        // } else if (i <= 29) {
-                        //     posiX = baseX + (i - 10) * 32
-                        // } else if (i <= 48) {
-                        //     posiX = baseX + (i - 29) * 32
-                        // } else if (i <= 68) {
-                        //     posiX = baseX + (i - 48) * 32
-                        // } else {
-                        //     posiX = baseX + 100 + (i - 68) * 32
-                        // }
-                        // if (i == 11 || i == 30 || i == 49 || i == 69) {
-                        //     posiY += 55
-                        // }
-                        // this.add.sprite(posiX, posiY, 'transText' + i)
-                        // i++
+                        // btn.scale.setTo(0.8)
+                        btn.inputEnabled = true
+                        btn.events.onInputDown.add(() => {
+                            // lotMusic.destroy()
+                            var startAudio: any = document.getElementById('startAudio')
+                            startAudio.muted = true
+                            this.state.start('ready')
+                        }, this)
+
                     }, this)
+
+                    // let tm = this.time.events.repeat(1000, 5, function () {
+                    // let trant = this.add.sprite(posiArr[i].x, posiArr[i].y, 'transT' + (i + 1))
+                    // let tw = this.add.tween(trant).from({
+                    //     alpha: 0
+                    // }, 500, 'Linear', true)
+                    // i++
+                    // if (i == 5) {
+                    //     tw.onComplete.add(() => {
+                    //         let btn = this.add.sprite(440, 500, 'transWdl')
+                    //         this.add.tween(btn).from({
+                    //             alpha: 0
+                    //         }, 500, 'Linear', true)
+                    //         btn.scale.setTo(0.8)
+                    //         btn.inputEnabled = true
+                    //         btn.events.onInputDown.add(() => {
+                    //             // lotMusic.destroy()
+                    //             var startAudio: any = document.getElementById('startAudio')
+                    //             startAudio.muted = true
+                    //             this.state.start('ready')
+                    //         }, this)
+                    //     })
+                    // }
+                    // if (i > 80) {
+                    //     if (i == 81) {
+                    //         let btn = this.add.sprite(440, 500, 'transWdl')
+                    //         btn.scale.setTo(0.8)
+                    //         btn.inputEnabled = true
+                    //         btn.events.onInputDown.add(() => {
+                    //             // lotMusic.destroy()
+                    //             var startAudio: any = document.getElementById('startAudio')
+                    //             startAudio.muted = true
+                    //             this.state.start('ready')
+                    //         }, this)
+                    //     }
+                    //     return
+                    // }
+                    // // if (i == 70) {
+                    // //     this.add.sprite(255, 418, 'transBottom')
+                    // // }
+                    // if (i <= 10) {
+                    //     posiX = baseX + 120 + i * 32
+                    // } else if (i <= 29) {
+                    //     posiX = baseX + (i - 10) * 32
+                    // } else if (i <= 48) {
+                    //     posiX = baseX + (i - 29) * 32
+                    // } else if (i <= 68) {
+                    //     posiX = baseX + (i - 48) * 32
+                    // } else {
+                    //     posiX = baseX + 100 + (i - 68) * 32
+                    // }
+                    // if (i == 11 || i == 30 || i == 49 || i == 69) {
+                    //     posiY += 55
+                    // }
+                    // this.add.sprite(posiX, posiY, 'transText' + i)
+                    // i++
+                    // }, this)
                 }, this)
             }, this)
             /* Music */
@@ -995,8 +1017,8 @@ namespace Lottery {
         getResult() {
             let _this = this
             // 是否抽过奖
-            // let isLottery = window.localStorage.getItem('lottery')
-            let isLottery = false
+            let isLottery = window.localStorage.getItem('lottery')
+            // let isLottery = false
             if (isLottery) {
                 _this.isNet = true
                 let arr = [1, 5]
